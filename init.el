@@ -34,4 +34,5 @@
 (require 'keybind)
 (require 'plugin)
 
+(provide 'init)
 ;;; init.el ends here
