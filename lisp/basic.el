@@ -20,5 +20,10 @@
 
 (setq warning-minimum-level :emergency) ;; set level 
 
+;; set custom config file
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+;; auto load custom file
+(when (file-exists-p custom-file)
+  (load-file custom-file))
 
 (provide 'basic)
