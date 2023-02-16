@@ -1,8 +1,8 @@
 ;; for melpa package
 (require 'package)
-(setq package-enable-at-startup nil)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
+(unless (bound-and-true-p package--initialized)
+  (package-initialize))
 
 ;; Bootstrap `use-package'
 (unless (package-installed-p 'use-package)
