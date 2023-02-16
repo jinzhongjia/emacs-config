@@ -33,6 +33,9 @@
   (setq auto-package-update-hide-results t)
   (auto-package-update-maybe))
 
+;; easily restart emacs
+(use-package restart-emacs)
+
 ;; ivy
 (use-package counsel
   :ensure t
