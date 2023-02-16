@@ -22,6 +22,8 @@
   (setq use-package-always-ensure t
         use-package-always-defer t
         use-package-enable-imenu-support t
+        use-package-always-demand nil
+        use-package-verbose t
         use-package-expand-minimally t)
   (require 'use-package))
 
