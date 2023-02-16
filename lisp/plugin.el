@@ -38,6 +38,16 @@
 ;; easily restart emacs
 (use-package restart-emacs)
 
+(use-package gruvbox-theme
+  :init (load-theme 'gruvbox-dark-soft t))
+
+;;smart-mode-line
+(use-package smart-mode-line
+  :init
+  (setq sml/no-confirm-load-theme t
+        sml/theme 'respectful)
+  (sml/setup))
+
 ;; ivy
 (use-package counsel
   :ensure t
@@ -83,10 +93,7 @@
 ;;   :ensure t
 ;;   :init (global-undo-tree-mode))
 
-;;smart-mode-line
-(use-package smart-mode-line
-  :ensure t
-  :init (sml/setup))
+
 
 ;; good-scroll
 ;; (use-package good-scroll
