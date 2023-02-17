@@ -27,6 +27,9 @@
 
 ;; (setq warning-minimum-level :emergency) ;; set level 
 
+;; use y/n replace yes/no
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 ;; set custom config file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 ;; auto load custom file
