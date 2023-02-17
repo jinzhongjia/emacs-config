@@ -26,4 +26,9 @@
 (when (file-exists-p custom-file)
   (load-file custom-file))
 
+;; setting for font
+;; 字体设置完成，但是刚开启emacs会出现一次窗口缩放的问题，需要解决
+(if (display-graphic-p)
+  (set-face-attribute 'default nil :font "FiraCode Nerd Font 13" ))
+
 (provide 'basic)
