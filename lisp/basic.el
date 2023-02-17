@@ -25,7 +25,7 @@
 
 ;; (setq custom-safe-themes t) ;; 视所有主题均为安全的
 
-;; (setq warning-minimum-level :emergency) ;; set level 
+(setq warning-minimum-level :emergency) ;; set level 
 
 ;; use y/n replace yes/no
 (defalias 'yes-or-no-p 'y-or-n-p)

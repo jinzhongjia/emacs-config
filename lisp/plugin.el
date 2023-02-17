@@ -106,9 +106,9 @@
 
 ;;ace-windows
 ;; TODO
-;; (use-package ace-window
-;;   :ensure t
-;;   :bind (("C-x o" . 'ace-window)))
+(use-package ace-window
+  :ensure t
+  :bind (("C-x o" . 'ace-window)))
 
 ;;mwim
 (use-package mwim
