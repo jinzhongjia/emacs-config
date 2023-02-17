@@ -73,10 +73,18 @@
    :map minibuffer-local-map
    ("C-r" . counsel-minibuffer-history)))
 
+;; for completion
 (use-package company
   :hook (after-init . global-company-mode)
   :config (setq company-minimum-prefix-length 1
                 company-show-quick-access t))
+
+;; support syntx check
+(use-package flymake
+  :hook (prog-mode . flymake-mode)
+  :config
+  (global-set-key (kbd "M-n") #'flymake-goto-next-error)
+  (global-set-key (kbd "M-p") #'flymake-goto-prev-error))
 
 ;;an alternative interface for M-x in Emacs
 ;; TODO
