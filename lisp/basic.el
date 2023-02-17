@@ -25,7 +25,7 @@
 
 ;; (setq custom-safe-themes t) ;; 视所有主题均为安全的
 
-(setq warning-minimum-level :emergency) ;; set level 
+;; (setq warning-minimum-level :emergency) ;; set level 
 
 ;; set custom config file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))

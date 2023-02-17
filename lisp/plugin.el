@@ -47,6 +47,10 @@
   (setq sml/no-confirm-load-theme t
         sml/theme 'respectful)
   (sml/setup))
+;;
+(use-package benchmark-init
+  :init (benchmark-init/activate)
+  :hook (after-init . benchmark-init/deactivate))
 
 ;; ivy
 (use-package counsel
