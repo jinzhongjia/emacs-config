@@ -86,6 +86,18 @@
   (global-set-key (kbd "M-n") #'flymake-goto-next-error)
   (global-set-key (kbd "M-p") #'flymake-goto-prev-error))
 
+;; add crux
+(use-package crux
+  :bind (("C-a" . 'crux-move-beginning-of-line)
+         ("C-c ^" . 'crux-top-join-line)
+         ("C-x ," . 'crux-find-user-init-file)
+         ("C-c k" . 'crux-smart-kill-line)))
+
+;; add which key
+(use-package which-key
+  :defer nil
+  :config (which-key-mode))
+
 ;;an alternative interface for M-x in Emacs
 ;; TODO
 ;; (use-package amx
