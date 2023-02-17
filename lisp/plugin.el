@@ -52,7 +52,7 @@
   :init (benchmark-init/activate)
   :hook (after-init . benchmark-init/deactivate))
 
-;; ivy
+;; ivy swiper counsel
 (use-package counsel
   :ensure t
   :init
@@ -72,6 +72,11 @@
    ("C-x C-SPC" . 'counsel-mark-ring)
    :map minibuffer-local-map
    ("C-r" . counsel-minibuffer-history)))
+
+(use-package company
+  :hook (after-init . global-company-mode)
+  :config (setq company-minimum-prefix-length 1
+                company-show-quick-access t))
 
 ;;an alternative interface for M-x in Emacs
 ;; TODO
