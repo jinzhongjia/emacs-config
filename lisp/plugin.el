@@ -77,7 +77,17 @@
 (use-package company
   :hook (after-init . global-company-mode)
   :config (setq company-minimum-prefix-length 1
-                company-show-quick-access t))
+                company-show-quick-access t
+                company-idle-delay 0.0
+                company-show-numbers t
+                company-selection-wrap-around t
+                company-transformers '(company-sort-by-occurrence)))
+
+;; add company icon support
+(use-package company-box
+  :ensure t
+  :if window-system
+  :hook (company-mode . company-box-mode))
 
 ;; support syntx check
 (use-package flymake
@@ -97,6 +107,8 @@
 (use-package which-key
   :defer nil
   :config (which-key-mode))
+
+
 
 ;;an alternative interface for M-x in Emacs
 ;; TODO
