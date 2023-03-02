@@ -93,10 +93,11 @@
 (use-package yasnippet
   :ensure t
   :init
-  (yas-reload-all)
+  ;; (yas-reload-all)
   :hook
   (prog-mode . yas-minor-mode)
   :config
+  (yas-reload-all)
   ;; add company-yasnippet to company-backends
   (defun company-mode/backend-with-yas (backend)
     (if (and (listp backend) (member 'company-yasnippet backend))
