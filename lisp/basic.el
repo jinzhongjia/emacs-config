@@ -1,3 +1,5 @@
+(require 'init-const)
+
 ;; (setq confirm-kill-emacs #'yes-or-no-p)      ; 在关闭 Emacs 前询问是否确认关闭，防止误触
 (electric-pair-mode t)                       ; 自动补全括号
 (add-hook 'prog-mode-hook #'show-paren-mode) ; 编程模式下，光标在括号上时高亮另一个括号
@@ -25,7 +27,7 @@
 
 ;; (setq custom-safe-themes t) ;; 视所有主题均为安全的
 
-(setq warning-minimum-level :emergency) ;; set level 
+;; (setq warning-minimum-level :emergency) ;; set level 
 
 ;; use y/n replace yes/no
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -40,5 +42,16 @@
 ;; 字体设置完成，但是刚开启emacs会出现一次窗口缩放的问题，需要解决
 (if (display-graphic-p)
   (set-face-attribute 'default nil :font "FiraCode Nerd Font 13" ))
+
+;; ignore byte-compile warnings, TODO: why set this?
+(setq byte-compile-warnings '(not nresolved
+                                  free-vars
+                                  callargs
+                                  redefine
+                                  obsolete
+                                  noruntime
+                                  cl-functions
+                                  interactive-only
+                                  ))
 
 (provide 'basic)
