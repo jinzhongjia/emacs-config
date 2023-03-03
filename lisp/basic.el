@@ -15,10 +15,8 @@
 
 ;; setting for utf-8
 (prefer-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(setq default-buffer-file-coding-system 'utf-8)
+(unless *is-windows*
+    (set-selection-coding-system 'utf-8))
 
 ;; (savehist-mode 1)                            ; （可选）打开 Buffer 历史记录保存
 (setq display-line-numbers-type 'relative)   ; （可选）显示相对行号
@@ -53,5 +51,11 @@
                                   cl-functions
                                   interactive-only
                                   ))
+
+;; config for gc
+(setq gc-cons-threshold most-positive-fixnum)
+
+;; replace yes/no with y/n
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 (provide 'basic)
