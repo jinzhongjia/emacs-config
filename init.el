@@ -60,5 +60,10 @@
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion)))))
 
+;; for restart-emacs
+(use-package restart-emacs
+  :init
+  (setq restart-emacs-restore-frames t))
+
 ;; 放在最后一行，应用 emacs 自动设置的变量
 (if (file-exists-p custom-file) (load-file custom-file))
