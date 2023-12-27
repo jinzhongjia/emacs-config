@@ -65,5 +65,10 @@
   :init
   (setq restart-emacs-restore-frames t))
 
+;; good scroll
+(use-package good-scroll
+  :init 
+  (good-scroll-mode))
+
 ;; 放在最后一行，应用 emacs 自动设置的变量
 (if (file-exists-p custom-file) (load-file custom-file))
