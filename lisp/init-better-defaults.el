@@ -38,4 +38,8 @@
 (use-package restart-emacs
   :ensure t)
 
+(use-package beacon
+  :ensure t
+  :init (beacon-mode 1))
+
 (provide 'init-better-defaults)
