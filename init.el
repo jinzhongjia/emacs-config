@@ -7,6 +7,10 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
+;; basic settings
+;; -----------------------------------------------------------------
+(require 'init-basic)
+
 ;; Package Management
 ;; -----------------------------------------------------------------
 (require 'init-packages)
@@ -18,6 +22,10 @@
 ;; ui
 ;; -----------------------------------------------------------------
 (require 'init-ui)
+
+;; enhance
+;; -----------------------------------------------------------------
+(require 'init-enhance)
 
 ;; undo-tree
 (use-package undo-tree

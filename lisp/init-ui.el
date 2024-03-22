@@ -1,3 +1,5 @@
+(set-frame-font "Maple Mono SC NF" nil t)
+
 ;; rainbow 
 (use-package rainbow-delimiters
   :ensure t
@@ -21,21 +23,13 @@
   :config
   (load-theme 'vscode-dark-plus t))
 
-(use-package savehist
-  :ensure nil
-  :hook (after-init . savehist-mode)
-  :init (setq enable-recursive-minibuffers t ; Allow commands in minibuffers
-              history-length 1000
-              savehist-additional-variables '(mark-ring
-                                              global-mark-ring
-                                              search-ring
-                                              regexp-search-ring
-                                              extended-command-history)
-              savehist-autosave-interval 300)
+(use-package nerd-icons
+  :ensure t
+  :custom
+  ;; The Nerd Font you want to use in GUI
+  ;; "Symbols Nerd Font Mono" is the default and is recommended
+  ;; but you can use any other Nerd Font if you want
+  (nerd-icons-font-family "Maple Mono SC NF")
   )
-
-(use-package saveplace
-  :ensure nil
-  :hook (after-init . save-place-mode))
 
 (provide 'init-ui)
