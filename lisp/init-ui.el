@@ -32,4 +32,9 @@
   (nerd-icons-font-family "Maple Mono SC NF")
   )
 
+(use-package telephone-line
+  :ensure t
+  :config
+  (telephone-line-mode 1))
+
 (provide 'init-ui)
