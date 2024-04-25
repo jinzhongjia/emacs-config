@@ -15,6 +15,9 @@
 ;; -----------------------------------------------------------------
 (require 'init-packages)
 
+;; vscode theme
+(require 'init-theme)
+
 ;; better defaults
 ;; -----------------------------------------------------------------
 (require 'init-better-defaults)

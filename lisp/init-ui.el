@@ -17,12 +17,6 @@
   :if window-system          ; 在图形化界面时才使用这个插件
   :init (good-scroll-mode))
 
-;; vscode theme
-(use-package vscode-dark-plus-theme
-  :ensure t
-  :config
-  (load-theme 'vscode-dark-plus t))
-
 (use-package nerd-icons
   :ensure t
   :custom
