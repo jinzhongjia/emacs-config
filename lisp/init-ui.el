@@ -21,10 +21,6 @@
   :ensure t
   :bind (("C-x o" . 'ace-window)))
 
-(use-package vscode-icon
-  :ensure t
-  :commands (vscode-icon-for-file))
-
 (use-package dirvish
   :ensure t
   :init 
