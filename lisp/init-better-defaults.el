@@ -1,11 +1,31 @@
-(use-package helm
+(use-package counsel 
   :ensure t
-  ;; 等价于 (bind-key "M-x" #'helm-M-x)
-  :bind (("M-x" . helm-M-x)
-         ("C-x C-f" . helm-find-files))
+  :init
+  (ivy-mode 1)
+  (counsel-mode 1)
   :config
-  ;; 全局启用 Helm minor mode
-  (helm-mode 1))
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-count-format "(%d/%d) ")
+  (setq search-default-mode #'char-fold-to-regexp)
+  :bind
+  (("C-s" . 'swiper)
+   ("C-x b" . 'ivy-switch-buffer)
+   ("C-c v" . 'ivy-push-view)
+   ("C-c s" . 'ivy-switch-view)
+   ("C-c V" . 'ivy-pop-view)
+   ("C-x C-SPC" . 'counsel-mark-ring)
+   :map minibuffer-local-map
+   ("C-r" . counsel-minibuffer-history)))
+
+(use-package amx
+  :ensure t
+  :init (amx-mode))
+
+(use-package marginalia
+  :ensure t
+  :init (marginalia-mode)
+  :bind (:map minibuffer-local-map
+         ("M-A" . marginalia-cycle)))
 
 ;; restart-emacs
 (use-package restart-emacs
