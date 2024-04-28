@@ -1,45 +1,27 @@
+;; for complete
 (use-package company
   :ensure t
-  :init (global-company-mode)
+  ;; 等价于 (add-hook 'after-init-hook #'global-company-mode)
+  :hook (after-init . global-company-mode)
   :config
-  (setq company-minimum-prefix-length 1) ; 只需敲 1 个字母就开始进行自动补全
-  (setq company-tooltip-align-annotations t)
-      (setq company-idle-delay 0.0)
-  (setq company-show-numbers t) ;; 给选项编号 (按快捷键 M-1、M-2 等等来进行选择).
-  (setq company-selection-wrap-around t)
-  (setq company-transformers '(company-sort-by-occurrence))) ; 根据选择的频率进行排序，读者如果不喜欢可以去掉
+  ;; setq 可以像这样连着设置多个变量的值
+  (setq company-tooltip-align-annotations t ; 注释贴右侧对齐
+        company-tooltip-limit 20            ; 菜单里可选项数量
+        company-show-numbers t              ; 显示编号（然后可以用 M-数字 快速选定某一项）
+        company-idle-delay .2               ; 延时多少秒后弹出
+        company-minimum-prefix-length 1     ; 至少几个字符后开始补全
+        ))
 
-(use-package company-box
-      :ensure t
-      :if window-system
-      :hook (company-mode . company-box-mode))
-
-(use-package yasnippet
-  :ensure t
-  :hook
-  (prog-mode . yas-minor-mode)
-  :config
-  (yas-reload-all)
-  ;; add company-yasnippet to company-backends
-  (defun company-mode/backend-with-yas (backend)
-    (if (and (listp backend) (member 'company-yasnippet backend))
-	    backend
-      (append (if (consp backend) backend (list backend))
-               '(:with company-yasnippet))))
-  (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
-  ;; unbind <TAB> completion
-  (define-key yas-minor-mode-map [(tab)]        nil)
-  (define-key yas-minor-mode-map (kbd "TAB")    nil)
-  (define-key yas-minor-mode-map (kbd "<tab>")  nil)
-  :bind
-  (:map yas-minor-mode-map ("S-<tab>" . yas-expand)))
-    
-(use-package yasnippet-snippets
-  :ensure t
-  :after yasnippet)
-
+;; for check
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode))
-  
+  :init ;; 在 (require) 之前需要执行的
+  (setq flycheck-emacs-lisp-load-path 'inherit)
+  :config
+  (global-flycheck-mode))
+
+;; magit
+(use-package magit
+  :ensure t)
+
 (provide 'init-enhance)

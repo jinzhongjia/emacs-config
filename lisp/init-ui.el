@@ -17,18 +17,4 @@
   :if window-system          ; 在图形化界面时才使用这个插件
   :init (good-scroll-mode))
 
-(use-package nerd-icons
-  :ensure t
-  :custom
-  ;; The Nerd Font you want to use in GUI
-  ;; "Symbols Nerd Font Mono" is the default and is recommended
-  ;; but you can use any other Nerd Font if you want
-  (nerd-icons-font-family "Maple Mono SC NF")
-  )
-
-(use-package telephone-line
-  :ensure t
-  :config
-  (telephone-line-mode 1))
-
 (provide 'init-ui)
