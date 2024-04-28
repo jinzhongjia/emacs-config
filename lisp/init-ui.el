@@ -21,4 +21,19 @@
   :ensure t
   :bind (("C-x o" . 'ace-window)))
 
+(use-package vscode-icon
+  :ensure t
+  :commands (vscode-icon-for-file))
+
+(use-package dirvish
+  :ensure t
+  :init 
+  (dirvish-override-dired-mode)
+  :config
+  (setq dirvish-attributes
+    '(vc-state subtree-state vscode-icon collapse git-msg file-time file-size))
+  :bind ("C-x C-d" . 'dirvish))
+
+
+
 (provide 'init-ui)

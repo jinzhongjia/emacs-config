@@ -33,14 +33,18 @@
   (global-flycheck-mode))
 
 ;; magit
-(use-package magit
-  :ensure t)
+;; (use-package magit
+  ;; :ensure t)
 
 
 ;; search in bufer
 (use-package ctrlf
   :ensure t
   :config
-  (ctrlf-mode t))
+  (ctrlf-mode t)
+  (dirvish-side-follow-mode t)
+  (setq delete-by-moving-to-trash t)
+  :bind 
+  (("C-c m" . dirvish-side)))
 
 (provide 'init-enhance)
