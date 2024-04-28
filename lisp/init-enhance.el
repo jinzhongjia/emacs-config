@@ -12,6 +12,18 @@
         company-minimum-prefix-length 1     ; 至少几个字符后开始补全
         ))
 
+;; enable snippet
+(use-package yasnippet
+  :ensure t
+  :config
+  ;; 全局启用这个 minor mode
+  (yas-global-mode 1))
+
+;; 再装一个通用模板库，省得没 template 用
+(use-package yasnippet-snippets
+  :ensure t
+  :after (yasnippet))
+
 ;; for check
 (use-package flycheck
   :ensure t
@@ -23,5 +35,12 @@
 ;; magit
 (use-package magit
   :ensure t)
+
+
+;; search in bufer
+(use-package ctrlf
+  :ensure t
+  :config
+  (ctrlf-mode t))
 
 (provide 'init-enhance)
