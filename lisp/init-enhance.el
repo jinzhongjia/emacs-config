@@ -33,8 +33,8 @@
   (global-flycheck-mode))
 
 ;; magit
-;; (use-package magit
-  ;; :ensure t)
+(use-package magit
+  :ensure t)
 
 
 ;; search in bufer
