@@ -34,6 +34,7 @@
   ;; https://github.com/emacs-lsp/lsp-mode/blob/master/docs/tutorials/how-to-turn-off.md
   (setq lsp-enable-symbol-highlighting t
         lsp-ui-doc-enable t
-        lsp-lens-enable t))
+        lsp-lens-enable t)
+  (setq lsp-ui-doc-position 'top))
 
 (provide 'init-lsp)
