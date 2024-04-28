@@ -17,7 +17,8 @@
   :ensure t
   :config
   ;; 全局启用这个 minor mode
-  (yas-global-mode 1))
+  ;; (yas-global-mode 1)
+)
 
 ;; 再装一个通用模板库，省得没 template 用
 (use-package yasnippet-snippets
