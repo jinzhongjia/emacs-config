@@ -31,9 +31,22 @@
   (dirvish-override-dired-mode)
   :config
   (setq dirvish-attributes
-    '(vc-state subtree-state vscode-icon collapse git-msg file-time file-size))
+    '(vc-state subtree-state vscode-icon git-msg file-time file-size))
+  (setq dirvish-preview-dispatchers
+      (cl-substitute 'pdf-preface 'pdf dirvish-preview-dispatchers))
+  (setq dired-mouse-drag-files t)
+  (setq mouse-drag-and-drop-region-cross-program t)
   :bind ("C-x C-d" . 'dirvish))
 
+;; Addtional syntax highlighting for dired
+(use-package diredfl
+  :ensure t
+  :hook
+  ((dired-mode . diredfl-mode)
+   ;; highlight parent and directory preview as well
+   (dirvish-directory-view-mode . diredfl-mode))
+  :config
+  (set-face-attribute 'diredfl-dir-name nil :bold t))
 
 
 (provide 'init-ui)
