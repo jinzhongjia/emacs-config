@@ -31,12 +31,16 @@
   (dirvish-override-dired-mode)
   :config
   (setq dirvish-attributes
-    '(vc-state subtree-state vscode-icon git-msg file-time file-size))
+    '(vc-state subtree-state all-the-icons git-msg file-time file-size))
   (setq dirvish-preview-dispatchers
       (cl-substitute 'pdf-preface 'pdf dirvish-preview-dispatchers))
   (setq dired-mouse-drag-files t)
   (setq mouse-drag-and-drop-region-cross-program t)
   :bind ("C-x C-d" . 'dirvish))
+
+(use-package all-the-icons
+  :ensure t
+  :if (display-graphic-p))
 
 ;; Addtional syntax highlighting for dired
 (use-package diredfl
@@ -48,5 +52,47 @@
   :config
   (set-face-attribute 'diredfl-dir-name nil :bold t))
 
+(use-package centaur-tabs
+  :ensure t
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  (centaur-tabs-headline-match)
+  (setq centaur-tabs-style "bar")
+  (setq centaur-tabs-set-icons t)
+  (setq centaur-tabs-plain-icons t)
+  (setq centaur-tabs-gray-out-icons 'buffer)
+  (setq centaur-tabs-set-bar 'left)
+  (setq centaur-tabs-set-modified-marker t)
+  (defun centaur-tabs-hide-tab (x)
+  "Do no to show buffer X in tabs."
+  (let ((name (format "%s" x)))
+    (or
+     ;; Current window is not dedicated window.
+     (window-dedicated-p (selected-window))
+
+     ;; Buffer name not match below blacklist.
+     (string-prefix-p "*Dirvish" name)
+     (string-prefix-p "*helm" name)
+     (string-prefix-p "*Helm" name)
+     (string-prefix-p "*Compile-Log*" name)
+     (string-prefix-p "*lsp" name)
+     (string-prefix-p "*company" name)
+     (string-prefix-p "*Flycheck" name)
+     (string-prefix-p "*tramp" name)
+     (string-prefix-p " *Mini" name)
+     (string-prefix-p "*help" name)
+     (string-prefix-p "*Messages" name)
+     (string-prefix-p " *temp" name)
+     (string-prefix-p "*Help" name)
+     (string-prefix-p "*mybuf" name)
+
+     ;; Is not magit buffer.
+     (and (string-prefix-p "magit" name)
+          (not (file-name-extension name)))
+     )))
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>" . centaur-tabs-forward))
 
 (provide 'init-ui)
