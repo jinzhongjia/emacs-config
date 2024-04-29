@@ -25,7 +25,7 @@
   :hook
   (prog-mode . yas-minor-mode)
   :config
-  (yas-reload-all)
+  ;; (yas-reload-all)
 )
 
 ;; 再装一个通用模板库，省得没 template 用

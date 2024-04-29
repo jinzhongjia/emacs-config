@@ -36,3 +36,5 @@
 (require 'init-lsp)
 
 (require 'init-dashboard)
+
+(require 'init-lang)
