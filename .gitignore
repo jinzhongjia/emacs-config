@@ -13,3 +13,5 @@ eshell
 elpa
 custom.el
 projectile-bookmarks.eld
+server
+snippets
