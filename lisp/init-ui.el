@@ -21,31 +21,38 @@
   :ensure t
   :bind (("C-x o" . 'ace-window)))
 
-(use-package dirvish
-  :ensure t
-  :init 
-  (dirvish-override-dired-mode)
+(use-package treemacs
+  :defer t
   :config
-  (setq dirvish-attributes
-    '(vc-state subtree-state all-the-icons git-msg file-time file-size))
-  (setq dirvish-preview-dispatchers
-      (cl-substitute 'pdf-preface 'pdf dirvish-preview-dispatchers))
-  (setq dired-mouse-drag-files t)
-  (setq mouse-drag-and-drop-region-cross-program t)
-  :bind ("C-x C-d" . 'dirvish))
+  (progn
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode 'always)
+    (when treemacs-python-executable
+      (treemacs-git-commit-diff-mode t))
 
-(use-package all-the-icons
-  :ensure t
-  :if (display-graphic-p))
+    (pcase (cons (not (null (executable-find "git")))
+                 (not (null treemacs-python-executable)))
+      (`(t . t)
+       (treemacs-git-mode 'deferred))
+      (`(t . _)
+       (treemacs-git-mode 'simple)))
 
-;; Addtional syntax highlighting for dired
-(use-package diredfl
-  :ensure t
-  :hook
-  ((dired-mode . diredfl-mode)
-   ;; highlight parent and directory preview as well
-   (dirvish-directory-view-mode . diredfl-mode))
-  :config
-  (set-face-attribute 'diredfl-dir-name nil :bold t))
+    (treemacs-hide-gitignored-files-mode t))
+  :bind
+  (:map global-map
+    ("M-0"       . treemacs-select-window)
+    ("C-x t 1"   . treemacs-delete-other-windows)
+    ("C-x t t"   . treemacs)
+    ("C-x t d"   . treemacs-select-directory)
+    ("C-x t B"   . treemacs-bookmark)
+    ("C-x t C-t" . treemacs-find-file)
+    ("C-x t M-t" . treemacs-find-tag)))  
+
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once))
+
+(use-package treemacs-magit
+  :after (treemacs magit))
 
 (provide 'init-ui)

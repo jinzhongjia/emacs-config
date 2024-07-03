@@ -1,7 +1,7 @@
 ;; vscode theme
-(use-package vscode-dark-plus-theme
+(use-package gruvbox-theme
   :ensure t
   :config
-  (load-theme 'vscode-dark-plus t))
+  (load-theme 'gruvbox-light-medium t))
 
 (provide 'init-theme)

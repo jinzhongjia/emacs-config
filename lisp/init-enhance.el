@@ -55,4 +55,8 @@
   :bind 
   (("C-c m" . dirvish-side)))
 
+(use-package google-translate)
+
+(use-package esup)
+
 (provide 'init-enhance)

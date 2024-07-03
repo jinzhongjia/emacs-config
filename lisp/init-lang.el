@@ -1,6 +1,3 @@
-(use-package zig-mode
-:ensure t
-
-)
+(use-package zig-mode)
 
 (provide 'init-lang)
