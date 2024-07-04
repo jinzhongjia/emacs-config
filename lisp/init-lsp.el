@@ -1,5 +1,4 @@
 (use-package lsp-mode
-  :ensure t
   ;; 延时加载：仅当 (lsp) 函数被调用时再 (require)
   :commands (lsp)
   ;; 在哪些语言 major mode 下启用 LSP
@@ -14,7 +13,6 @@
 
 ;; 内容呈现
 (use-package lsp-ui
-  :ensure t
   ;; 仅在某软件包被加载后再加载
   :after (lsp-mode)
   ;; 延时加载
@@ -36,5 +34,8 @@
         lsp-ui-doc-enable t
         lsp-lens-enable t)
   (setq lsp-ui-doc-position 'top))
+
+(use-package lsp-ivy
+ :after (lsp-mode))
 
 (provide 'init-lsp)

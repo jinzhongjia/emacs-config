@@ -1,6 +1,5 @@
 ;; for complete
 (use-package company
-  :ensure t
   ;; 等价于 (add-hook 'after-init-hook #'global-company-mode)
   :hook (after-init . global-company-mode)
   :config
@@ -15,13 +14,11 @@
         ))
 
 (use-package company-box
-      :ensure t
       :if window-system
       :hook (company-mode . company-box-mode))
 
 ;; enable snippet
 (use-package yasnippet
-  :ensure t
   :hook
   (prog-mode . yas-minor-mode)
   :config
@@ -30,24 +27,20 @@
 
 ;; 再装一个通用模板库，省得没 template 用
 (use-package yasnippet-snippets
-  :ensure t
   :after (yasnippet))
 
 ;; for check
 (use-package flycheck
-  :ensure t
   :config
   (setq truncate-lines nil) ; 如果单行信息很长会自动换行
   :hook
   (prog-mode . flycheck-mode))
 
 ;; magit
-(use-package magit
-  :ensure t)
+(use-package magit)
 
 ;; search in bufer
 (use-package ctrlf
-  :ensure t
   :config
   (ctrlf-mode t)
   (dirvish-side-follow-mode t)

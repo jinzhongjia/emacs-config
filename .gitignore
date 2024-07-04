@@ -15,3 +15,5 @@ custom.el
 projectile-bookmarks.eld
 server
 snippets
+.cache/treemacs-persist
+.cache/treemacs-persist~

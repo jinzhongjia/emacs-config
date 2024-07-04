@@ -1,5 +1,4 @@
 (use-package counsel 
-  :ensure t
   :init
   (ivy-mode 1)
   (counsel-mode 1)
@@ -18,21 +17,17 @@
    ("C-r" . counsel-minibuffer-history)))
 
 (use-package amx
-  :ensure t
   :init (amx-mode))
 
 (use-package marginalia
-  :ensure t
   :init (marginalia-mode)
   :bind (:map minibuffer-local-map
          ("M-A" . marginalia-cycle)))
 
 ;; restart-emacs
-(use-package restart-emacs
-  :ensure t)
+(use-package restart-emacs)
 
 (use-package beacon
-  :ensure t
   :init (beacon-mode 1))
 
 (provide 'init-better-defaults)
