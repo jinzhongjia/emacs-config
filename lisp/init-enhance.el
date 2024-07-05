@@ -1,7 +1,7 @@
 ;; for complete
 (use-package company
   ;; 等价于 (add-hook 'after-init-hook #'global-company-mode)
-  :hook (after-init . global-company-mode)
+  :init (global-company-mode)
   :config
   ;; setq 可以像这样连着设置多个变量的值
   (setq company-tooltip-align-annotations t ; 注释贴右侧对齐
@@ -14,6 +14,7 @@
         ))
 
 (use-package company-box
+      :after company
       :if window-system
       :hook (company-mode . company-box-mode))
 
@@ -22,7 +23,7 @@
   :hook
   (prog-mode . yas-minor-mode)
   :config
-  ;; (yas-reload-all)
+  (yas-reload-all)
 )
 
 ;; 再装一个通用模板库，省得没 template 用

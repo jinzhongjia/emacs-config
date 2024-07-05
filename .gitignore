@@ -17,3 +17,5 @@ server
 snippets
 .cache/treemacs-persist
 .cache/treemacs-persist~
+.cache/lsp
+.lsp-session-v1
