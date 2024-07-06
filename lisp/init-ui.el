@@ -21,6 +21,7 @@
   :defer t
   :config
   (progn
+    (setq treemacs-default-visit-action 'treemacs-visit-node-close-treemacs)
     (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
     (treemacs-fringe-indicator-mode 'always)

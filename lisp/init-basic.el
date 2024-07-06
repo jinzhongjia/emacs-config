@@ -6,4 +6,6 @@
 
 (set-face-attribute 'default nil :height 140)
 
+(setq gc-cons-threshold (* 2 1000 1000))
+
 (provide 'init-basic)
