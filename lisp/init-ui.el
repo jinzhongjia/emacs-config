@@ -11,10 +11,12 @@
 
 ;; good-scroll
 (use-package good-scroll
+  :defer t
   :if window-system          ; 在图形化界面时才使用这个插件
   :init (good-scroll-mode))
 
 (use-package ace-window
+  :defer t
   :bind (("C-x o" . 'ace-window)))
 
 (use-package treemacs

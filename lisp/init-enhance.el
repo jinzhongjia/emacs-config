@@ -1,5 +1,6 @@
 ;; for complete
 (use-package company
+  :defer t
   ;; 等价于 (add-hook 'after-init-hook #'global-company-mode)
   :init (global-company-mode)
   :config
@@ -14,12 +15,13 @@
         ))
 
 (use-package company-box
-      :after company
-      :if window-system
-      :hook (company-mode . company-box-mode))
+  :after company
+  :if window-system
+  :hook (company-mode . company-box-mode))
 
 ;; enable snippet
 (use-package yasnippet
+  :defer t
   :hook
   (prog-mode . yas-minor-mode)
   :config
@@ -27,6 +29,7 @@
 
 (use-package doom-snippets
   :ensure (doom-snippets :type git :host github :repo "doomemacs/snippets" :files ("*.el" "*"))
+  :defer t
   :after yasnippet)
 
 ;; 再装一个通用模板库，省得没 template 用
@@ -35,16 +38,19 @@
 
 ;; for check
 (use-package flycheck
+  :defer t
   :config
   (setq truncate-lines nil) ; 如果单行信息很长会自动换行
   :hook
   (prog-mode . flycheck-mode))
 
 ;; magit
-(use-package magit)
+(use-package magit
+  :defer t)
 
 ;; search in bufer
 (use-package ctrlf
+  :defer t
   :config
   (ctrlf-mode t)
   (dirvish-side-follow-mode t)
@@ -52,8 +58,10 @@
   :bind 
   (("C-c m" . dirvish-side)))
 
-(use-package google-translate)
+(use-package google-translate
+  :defer t)
 
-(use-package esup)
+(use-package esup
+  :defer t)
 
 (provide 'init-enhance)
