@@ -1,23 +1,16 @@
-;; for complete
-(use-package company
-  :defer t
-  ;; 等价于 (add-hook 'after-init-hook #'global-company-mode)
-  :init (global-company-mode)
-  :config
-  ;; setq 可以像这样连着设置多个变量的值
-  (setq company-tooltip-align-annotations t ; 注释贴右侧对齐
-        company-tooltip-limit 20            ; 菜单里可选项数量
-        company-show-numbers t              ; 显示编号（然后可以用 M-数字 快速选定某一项）
-        company-idle-delay .2               ; 延时多少秒后弹出
-        company-minimum-prefix-length 1     ; 至少几个字符后开始补全
-        company-selection-wrap-around t     ; 循环选择
-        company-transformers '(company-sort-by-occurrence) ; 按使用频率排序
-        ))
+(use-package corfu-terminal
+ :ensure (corfu-terminal
+   :type git
+   :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
+ :defer t
+ :config (corfu-terminal-mode t))
 
-(use-package company-box
-  :after company
-  :if window-system
-  :hook (company-mode . company-box-mode))
+(use-package exec-path-from-shell
+  :config (when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize)))
+
+(use-package elisp-format
+  :defer t)
 
 ;; enable snippet
 (use-package yasnippet

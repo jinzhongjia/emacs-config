@@ -9,6 +9,10 @@
   :init (highlight-symbol-mode)
   :bind ("<f3>" . highlight-symbol)) ;; 按下 F3 键就可高亮当前符号
 
+(use-package golden-ratio
+  :defer t
+  :config (golden-ratio-mode t))
+
 ;; good-scroll
 (use-package good-scroll
   :defer t

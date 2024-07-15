@@ -6,6 +6,11 @@
 
 (set-face-attribute 'default nil :height 140)
 
-(setq gc-cons-threshold (* 2 1000 1000))
+(setq gc-cons-threshold most-positive-fixnum)
+
+(prefer-coding-system 'utf-8)
+
+; use y/n to replace yes/no
+(defalias 'yes-or-no-p 'y-or-n-p)
 
 (provide 'init-basic)
