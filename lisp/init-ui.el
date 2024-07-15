@@ -9,6 +9,7 @@
   :init (highlight-symbol-mode)
   :bind ("<f3>" . highlight-symbol)) ;; 按下 F3 键就可高亮当前符号
 
+;; auto resize windows
 (use-package golden-ratio
   :defer t
   :config (golden-ratio-mode t))
@@ -41,12 +42,13 @@
       (`(t . _)
        (treemacs-git-mode 'simple)))
 
-    (treemacs-hide-gitignored-files-mode t))
+    (treemacs-hide-gitignored-files-mode t)
+    (treemacs-git-mode 'deferred))
   :bind
   (:map global-map
     ("M-0"       . treemacs-select-window)
     ("C-x t 1"   . treemacs-delete-other-windows)
-    ("C-x t t"   . treemacs)
+    ("C-c m"     . treemacs)
     ("C-x t d"   . treemacs-select-directory)
     ("C-x t B"   . treemacs-bookmark)
     ("C-x t C-t" . treemacs-find-file)

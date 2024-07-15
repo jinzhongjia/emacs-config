@@ -1,4 +1,4 @@
-(unse-package corfu-terminal
+(use-package corfu-terminal
  :ensure (corfu-terminal
    :type git
    :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
@@ -22,6 +22,7 @@
   :defer t
   :after yasnippet)
 
+
 ;; 再装一个通用模板库，省得没 template 用
 (use-package yasnippet-snippets
   :after (yasnippet))
@@ -36,22 +37,6 @@
 
 ;; magit
 (use-package magit
-  :defer t)
-
-;; search in bufer
-(use-package ctrlf
-  :defer t
-  :config
-  (ctrlf-mode t)
-  (dirvish-side-follow-mode t)
-  (setq delete-by-moving-to-trash t)
-  :bind 
-  (("C-c m" . dirvish-side)))
-
-(use-package google-translate
-  :defer t)
-
-(use-package esup
   :defer t)
 
 (provide 'init-enhance)

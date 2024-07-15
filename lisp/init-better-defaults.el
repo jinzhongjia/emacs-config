@@ -1,34 +1,40 @@
-(use-package counsel 
+(use-package helm
   :defer t
-  :init
-  (ivy-mode 1)
+  ;; 等价于 (bind-key "M-x" #'helm-M-x)
+  :bind (("M-x" . helm-M-x)
+         ("C-x C-f" . helm-find-files))
   :config
-  (setq ivy-use-virtual-buffers t
-        ivy-count-format "(%d/%d) "
-        search-default-mode #'char-fold-to-regexp)
-  :bind
-  (("C-s" . 'swiper)
-   ("C-x b" . 'ivy-switch-buffer)
-   ("C-c v" . 'ivy-push-view)
-   ("C-c s" . 'ivy-switch-view)
-   ("C-c V" . 'ivy-pop-view)
-   ("C-x C-SPC" . 'counsel-mark-ring)
-   :map minibuffer-local-map
-   ("C-r" . counsel-minibuffer-history)))
+  ;; 全局启用 Helm minor mode
+  (helm-mode 1))
 
-(use-package ivy-rich
-  :after (counsel)
-  :init (ivy-rich-mode 1))
+(use-package helm-ag
+  :after heml)
+
+
+(use-package helm-swoop
+  :after heml
+  ;; 更多关于它的配置方法: https://github.com/ShingoFukuyama/helm-swoop
+  ;; 以下我的配置仅供参考
+  :bind
+  (("M-i" . helm-swoop)
+   ("M-I" . helm-swoop-back-to-last-point)
+   ("C-c M-i" . helm-multi-swoop)
+   ("C-x M-i" . helm-multi-swoop-all)
+   :map isearch-mode-map
+   ("M-i" . helm-swoop-from-isearch)
+   :map helm-swoop-map
+   ("M-i" . helm-multi-swoop-all-from-helm-swoop)
+   ("M-m" . helm-multi-swoop-current-mode-from-helm-swoop))
+  :config
+  ;; 它像 helm-ag 一样，可以直接修改搜索结果 buffer 里的内容并 apply
+  (setq helm-multi-swoop-edit-save t)
+  ;; 如何给它新开分割窗口
+  ;; If this value is t, split window inside the current window
+  (setq helm-swoop-split-with-multiple-windows t))
 
 (use-package amx
   :defer t
   :init (amx-mode))
-
-(use-package marginalia
-  :defer t
-  :init (marginalia-mode)
-  :bind (:map minibuffer-local-map
-         ("M-A" . marginalia-cycle)))
 
 ;; restart-emacs
 (use-package restart-emacs

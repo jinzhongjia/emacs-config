@@ -20,3 +20,5 @@ site-lisp
 .cache/treemacs-persist~
 .cache/lsp
 .lsp-session-v1
+blink-search
+blink-search.db
