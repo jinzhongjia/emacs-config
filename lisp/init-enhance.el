@@ -22,7 +22,6 @@
   :defer t
   :after yasnippet)
 
-
 ;; 再装一个通用模板库，省得没 template 用
 (use-package yasnippet-snippets
   :after (yasnippet))
@@ -39,4 +38,15 @@
 (use-package magit
   :defer t)
 
+(use-package elec-pair
+  :ensure nil
+  :hook (after-init . electric-pair-mode)
+  :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+
+;; Google translate.
+(use-package go-translate
+  :config (setq go-translate-base-url "https://translate.google.cn"
+		go-translate-local-language "zh-CN" ))
+
 (provide 'init-enhance)
+;;; init-enhance.el ends here

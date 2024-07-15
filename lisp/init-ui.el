@@ -9,16 +9,11 @@
   :init (highlight-symbol-mode)
   :bind ("<f3>" . highlight-symbol)) ;; 按下 F3 键就可高亮当前符号
 
-;; auto resize windows
-(use-package golden-ratio
-  :defer t
-  :config (golden-ratio-mode t))
-
 ;; good-scroll
-(use-package good-scroll
-  :defer t
-  :if window-system          ; 在图形化界面时才使用这个插件
-  :init (good-scroll-mode))
+;(use-package good-scroll
+;  :defer t
+;  :if window-system          ; 在图形化界面时才使用这个插件
+;  :init (good-scroll-mode))
 
 (use-package ace-window
   :defer t
@@ -41,8 +36,6 @@
        (treemacs-git-mode 'deferred))
       (`(t . _)
        (treemacs-git-mode 'simple)))
-
-    (treemacs-hide-gitignored-files-mode t)
     (treemacs-git-mode 'deferred))
   :bind
   (:map global-map
