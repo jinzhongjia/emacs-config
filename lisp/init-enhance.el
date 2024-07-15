@@ -1,4 +1,4 @@
-(use-package corfu-terminal
+(unse-package corfu-terminal
  :ensure (corfu-terminal
    :type git
    :repo "https://codeberg.org/akib/emacs-corfu-terminal.git")
@@ -8,9 +8,6 @@
 (use-package exec-path-from-shell
   :config (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize)))
-
-(use-package elisp-format
-  :defer t)
 
 ;; enable snippet
 (use-package yasnippet

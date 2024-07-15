@@ -15,6 +15,7 @@ custom.el
 projectile-bookmarks.eld
 server
 snippets
+site-lisp
 .cache/treemacs-persist
 .cache/treemacs-persist~
 .cache/lsp
