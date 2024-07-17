@@ -15,13 +15,10 @@
 ;  :if window-system          ; 在图形化界面时才使用这个插件
 ;  :init (good-scroll-mode))
 
-(use-package ace-window
-  :defer t
-  :bind (("C-x o" . 'ace-window)))
-
 (use-package treemacs
   :defer t
   :config
+  (setq treemacs-show-hidden-files nil)
   (treemacs-git-mode 'extended)
   (setq treemacs-default-visit-action 'treemacs-visit-node-close-treemacs)
   (treemacs-hide-gitignored-files-mode t)

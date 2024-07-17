@@ -1,18 +1,21 @@
 (use-package helm
-  :defer t
   ;; 等价于 (bind-key "M-x" #'helm-M-x)
   :bind (("M-x" . helm-M-x)
          ("C-x C-f" . helm-find-files))
+  :init
+  (setq completion-styles '(flex))
   :config
   ;; 全局启用 Helm minor mode
   (helm-mode 1))
 
 (use-package helm-ag
-  :after heml)
+  :after helm)
 
+(use-package helm-system-packages
+  :after helm)
 
 (use-package helm-swoop
-  :after heml
+  :after helm
   ;; 更多关于它的配置方法: https://github.com/ShingoFukuyama/helm-swoop
   ;; 以下我的配置仅供参考
   :bind

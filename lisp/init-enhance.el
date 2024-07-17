@@ -38,10 +38,18 @@
 (use-package magit
   :defer t)
 
+;; for auto pair
 (use-package elec-pair
   :ensure nil
   :hook (after-init . electric-pair-mode)
   :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+
+;(use-package smartparens
+;  :defer t
+;  :hook (prog-mode text-mode markdown-mode smartparens-mode) ;; add `smartparens-mode` to these hooks
+;  :config
+  ;; load default config
+;  (require 'smartparens-config))
 
 ;; Google translate.
 (use-package go-translate
