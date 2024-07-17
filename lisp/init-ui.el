@@ -24,19 +24,7 @@
   :config
   (progn
     (setq treemacs-default-visit-action 'treemacs-visit-node-close-treemacs)
-    (treemacs-follow-mode t)
-    (treemacs-filewatch-mode t)
-    (treemacs-fringe-indicator-mode 'always)
-    (when treemacs-python-executable
-      (treemacs-git-commit-diff-mode t))
-
-    (pcase (cons (not (null (executable-find "git")))
-                 (not (null treemacs-python-executable)))
-      (`(t . t)
-       (treemacs-git-mode 'deferred))
-      (`(t . _)
-       (treemacs-git-mode 'simple)))
-    (treemacs-git-mode 'deferred))
+    (treemacs-hide-gitignored-files-mode t))
   :bind
   (:map global-map
     ("M-0"       . treemacs-select-window)
