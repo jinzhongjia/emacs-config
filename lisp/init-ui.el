@@ -22,9 +22,9 @@
 (use-package treemacs
   :defer t
   :config
-  (progn
-    (setq treemacs-default-visit-action 'treemacs-visit-node-close-treemacs)
-    (treemacs-hide-gitignored-files-mode t))
+  (treemacs-git-mode 'extended)
+  (setq treemacs-default-visit-action 'treemacs-visit-node-close-treemacs)
+  (treemacs-hide-gitignored-files-mode t)
   :bind
   (:map global-map
     ("M-0"       . treemacs-select-window)
