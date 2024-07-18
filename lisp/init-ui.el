@@ -18,6 +18,8 @@
 (use-package treemacs
   :defer t
   :config
+  (with-eval-after-load 'treemacs
+  (add-hook 'treemacs-mode-hook (lambda () (display-line-numbers-mode -1))))
   (setq treemacs-show-hidden-files nil)
   (treemacs-git-mode 'extended)
   (setq treemacs-default-visit-action 'treemacs-visit-node-close-treemacs)
