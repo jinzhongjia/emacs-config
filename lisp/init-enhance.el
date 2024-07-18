@@ -11,7 +11,6 @@
 
 ;; enable snippet
 (use-package yasnippet
-  :defer t
   :hook
   (prog-mode . yas-minor-mode)
   :config
@@ -19,12 +18,16 @@
 
 (use-package doom-snippets
   :ensure (doom-snippets :type git :host github :repo "doomemacs/snippets" :files ("*.el" "*"))
-  :defer t
   :after yasnippet)
 
 ;; 再装一个通用模板库，省得没 template 用
 (use-package yasnippet-snippets
   :after (yasnippet))
+
+(use-package ctrlf
+  :config
+  (ctrlf-mode t))
+;; 此时 C-s 已经被替换成 ctrlf 版本的了
 
 ;; for check
 (use-package flycheck
@@ -43,6 +46,16 @@
   :ensure nil
   :hook (after-init . electric-pair-mode)
   :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+
+(use-package electric-operator
+  :defer t
+  :hook (prog-mode-hook . electric-operator-mode))
+
+(use-package pangu-spacing
+  :defer t
+  :config
+  (setq pangu-spacing-real-insert-separtor t)
+  (global-pangu-spacing-mode 1))
 
 ;(use-package smartparens
 ;  :defer t

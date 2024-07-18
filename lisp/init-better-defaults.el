@@ -1,4 +1,5 @@
 (use-package helm
+  :defer nil
   ;; 等价于 (bind-key "M-x" #'helm-M-x)
   :bind (("M-x" . helm-M-x)
          ("C-x C-f" . helm-find-files))
