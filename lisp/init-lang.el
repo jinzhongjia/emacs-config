@@ -15,4 +15,7 @@
 (use-package zig-mode
     :defer t)
 
+(use-package nix-mode
+  :mode "\\.nix\\'")
+
 (provide 'init-lang)
