@@ -57,13 +57,6 @@
   (setq pangu-spacing-real-insert-separtor t)
   (global-pangu-spacing-mode 1))
 
-;(use-package smartparens
-;  :defer t
-;  :hook (prog-mode text-mode markdown-mode smartparens-mode) ;; add `smartparens-mode` to these hooks
-;  :config
-  ;; load default config
-;  (require 'smartparens-config))
-
 ;; Google translate.
 (use-package go-translate
   :config (setq go-translate-base-url "https://translate.google.cn"
