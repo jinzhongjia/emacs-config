@@ -1,0 +1,78 @@
+* early-init.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle early-init.el
+:END:
+
+emacs 刚启动时执行的配置文件,此时还未加载主配置文件
+
+#+BEGIN_SRC emacs-lisp
+  ;;; early-init.el --- Emacs pre-initialization config -*- lexical-binding: t -*-
+  ;;; Commentary:
+
+  ;;; Code:
+
+  ;; 设置垃圾回收参数
+  (setq gc-cons-threshold most-positive-fixnum)
+  (setq gc-cons-percentage 0.6)
+
+  ;; 禁止启动的首页展示
+  (setq package-enable-at-startup nil)
+
+  ;; 禁止自动缩放窗口先
+  (setq frame-inhibit-implied-resize t)
+
+  ;; 禁止菜单栏、工具栏、滚动条模式，禁止启动屏幕和文件对话框
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (setq inhibit-splash-screen t)
+  (setq use-file-dialog nil)
+
+  ;; 此阶段不编译
+  (setq comp-deferred-compilation nil)
+
+  ;; 设置 utf8 编码
+  (prefer-coding-system 'utf-8)
+
+  ; use y/n to replace yes/no
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  ; 不显示编译警告
+  (setq native-comp-async-report-warnings-errors nil)
+
+  ; 设置字体
+  (set-face-attribute 'default nil :height 140)
+
+  (provide 'early-init)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; early-init.el ends here
+#+END_SRC
+
+* init.el
+
+:PROPERTIES:
+:HEADER-ARGS: :tangle init.el
+:END:
+
+~init.el~ 是 emacs 的主配置文件
+
+#+BEGIN_SRC emacs-lisp
+;;; init.el --- The main init entry for Emacs -*- lexical-binding: t -*-
+;;; Commentary:
+
+;;; Code:
+
+#+END_SRC
+
+** 使用 ~elpaca~ 作为包管理器
+
+[[https://github.com/progfolio/elpaca][elpaca 是一款更加现代化的 GUI Emacs 包管理器，它拥有着相较于 straight.el]]
+
+* init.el 文件尾
+#+BEGIN_SRC emacs-lisp
+
+(provide 'init)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; init.el ends here
+#+END_SRC
+
