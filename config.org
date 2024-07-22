@@ -142,6 +142,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     (require 'init-tools)                 ; tools
     (require 'init-lsp)                   ; lsp 支持
     (require 'init-treesitter)            ; treesitter 支持
+    (require 'init-book)                  ; book 支持
     )
 
 #+END_SRC
@@ -1357,4 +1358,57 @@ lsp-bridge 的优势：
 (provide 'init-treesitter)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; init-treesitter.el ends here
+#+END_SRC
+
+* init-book.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle lisp/init-book.el :mkdirp yes
+:END:
+
+** init-book.el 文件头
+
+#+BEGIN_SRC emacs-lisp
+;;; init-book.el --- Tools settings -*- lexical-binding: t -*-
+;;; Commentary: Useful tools to make Emacs efficient!
+
+;;; Code:
+
+#+END_SRC
+
+** nov
+
+[[https://depp.brause.cc/nov.el/][nov]] 让 emacs 支持阅读 equb，相当棒的插件！
+
+#+begin_src emacs-lisp
+  (use-package nov
+    :mode ("\\.epub\\'" . nov-mode)
+    :bind (:map nov-mode-map
+                ("j" . scroll-up-line)
+                ("k" . scroll-down-line))
+    )
+#+end_src
+
+** calibredb.el
+
+emacs 的 calibredb 客户端，支持在 emacs 中管理和阅读图书！
+
+#+begin_src emacs-lisp
+  (use-package calibredb
+    :commands calibredb
+    :bind ("\e\e b" . calibredb)
+    :config
+    (setq calibredb-root-dir "~/Calibre")
+    (setq calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
+    (setq calibredb-library-alist '(("~/Books/books")
+                                    ))
+    )
+#+end_src
+
+** init-book.el 文件尾
+
+#+BEGIN_SRC emacs-lisp
+
+(provide 'init-book)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; init-book.el ends here
 #+END_SRC
