@@ -1,3 +1,6 @@
+
+#+DOWNLOADED: screenshot @ 2024-07-22 20:55:35
+[[file:这是什么？/2024-07-22_20-55-35_screenshot.png]]
 * 这是什么？
 
 这是我的个人 emacs 配置，该配置很大程度上参考了 [[https://remacs.fun/][remacs 的世界]] 中的教程。
@@ -15,6 +18,9 @@
 - ~git~
 - calibre（图书管理工具，用于看书）
 - ~python~
+
+以下是 python 依赖：
+
 - ~epc~
 - ~orjson~
 - ~sexpdata~
