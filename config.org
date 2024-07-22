@@ -135,28 +135,8 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     (require 'init-ui)                    ; UI交互
     (require 'init-edit)                  ; 编辑行为
     (require 'init-org)                   ; org相关设置
-    ;(require 'init-completion)            ; 补全系统
+    (require 'init-completion)            ; 补全系统
     )
-  ;; vscode theme
-  ;(require 'init-theme)
-
-  ;; better defaults
-  ;; -----------------------------------------------------------------
-  ;(require 'init-better-defaults)
-
-  ;; ui
-  ;; -----------------------------------------------------------------
-  ;(require 'init-ui)
-
-  ;; enhance
-  ;; -----------------------------------------------------------------
-  ;(require 'init-enhance)
-
-  ;; lsp
-  ;; -----------------------------------------------------------------
-  ;(require 'init-lsp)
-
-  ;(require 'init-lang)
 
 #+END_SRC
 
@@ -324,9 +304,6 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 ;; 在命令行里支持鼠标
 (xterm-mouse-mode 1)
 
-;; 退出Emacs时进行确认
-(setq confirm-kill-emacs 'y-or-n-p)
-
 ;; 在模式栏上显示当前光标的列号
 (column-number-mode t)
 #+end_src
@@ -353,7 +330,35 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 #+end_src
 
+** 模式栏设置
+*** doom-modeline插件
+
+[[https://github.com/seagle0128/doom-modeline][doom-modeline]] 是一个模式栏美化插件。
+
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :config (doom-modeline-mode)
+  :custom
+  (doom-modeline-irc nil)
+  (doom-modeline-mu4e nil)
+  (doom-modeline-gnus nil)
+  (doom-modeline-github nil)
+  (doom-modeline-buffer-file-name-style 'truncate-upto-root) ; : auto
+  (doom-modeline-persp-name nil)
+  (doom-modeline-unicode-fallback t)
+  (doom-modeline-enable-word-count nil))
+#+end_src
+
+*** minions插件
+[[https://github.com/tarsius/minions][minions]] 插件能让模式栏变得清爽，将次要模式隐藏起来。
+
+#+BEGIN_SRC emacs-lisp
+(use-package minions
+  :config (minions-mode))
+#+END_SRC
+
 ** init-ui.el 文件尾
+
 #+BEGIN_SRC emacs-lisp
 
 (provide 'init-ui)
@@ -399,17 +404,6 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 (global-set-key [mouse-2] nil)
 #+END_SRC
 
-** delsel选择文本输入时直接替换
-
-Emacs默认选择文本后直接输入，是不会直接删除所选择的文本进行替换的。通过内置的 =delsel= 插件来实现这个行为。
-
-#+begin_src emacs-lisp
-;; Directly modify when selecting text
-(use-package delsel
-  :ensure nil
-  :hook (after-init . delete-selection-mode))
-#+end_src
-
 ** 自动重载设置
 
 当我们的文件发生了改变后，我们希望Emacs里打开的永远是最新的文件，这个时候，我们需要对自动重载进行设置，让我们的Emacs在文件发生改变的时候自动重载文件。
@@ -417,8 +411,7 @@ Emacs默认选择文本后直接输入，是不会直接删除所选择的文本
 #+BEGIN_SRC emacs-lisp
 (use-package autorevert
   :ensure nil
-  :hook (after-init . global-auto-revert-mode)
-  :bind ("s-u" . revert-buffer)
+  :config (global-auto-revert-mode)
   :custom
   (auto-revert-interval 10)
   (auto-revert-avoid-polling t)
@@ -474,4 +467,76 @@ Emacs默认选择文本后直接输入，是不会直接删除所选择的文本
 (provide 'init-org)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; init-org.el ends here
+#+END_SRC
+
+* init-completion.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle lisp/init-completion.el :mkdirp yes
+:END:
+
+Emacs的补全设置。
+
+** init-completion.el 文件头
+#+BEGIN_SRC emacs-lisp
+;;; init-completion.el --- Completion settings -*- lexical-binding: t -*-
+;;; Commentary:
+
+;;; Code:
+
+#+END_SRC
+
+** 括号自动补全支持
+
+使用 emacs 内置的包来实现括号补全
+
+#+BEGIN_SRC emacs-lisp
+(use-package elec-pair
+  :ensure nil
+  :hook (after-init . electric-pair-mode)
+  :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))  
+#+END_SRC
+** vertico 垂直补全系统
+
+[[https://github.com/minad/vertico][vertico]] 插件提供了一个垂直样式的补全系统。
+
+#+BEGIN_SRC emacs-lisp
+  (use-package vertico
+    :init (vertico-mode))
+#+END_SRC
+
+** stavehist 保存 ~vertico~ 历史记录
+
+#+BEGIN_SRC emacs-lisp
+  (use-package savehist
+    :ensure nil
+    :init
+    (savehist-mode))
+#+END_SRC
+
+** orderless 无序搜索
+#+BEGIN_SRC emacs-lisp
+  (use-package pinyinlib
+    :ensure t)
+  
+  (use-package orderless
+    :custom
+    ;; Configure a custom style dispatcher (see the Consult wiki)
+    ;; (orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch))
+    ;; (orderless-component-separator #'orderless-escapable-split-on-space)
+    (completion-styles '(orderless basic))
+    (completion-category-defaults nil)
+    (completion-category-overrides '((file (styles partial-completion))))
+    :config
+    ;; make completion support pinyin, refer to
+    ;; https://emacs-china.org/t/vertico/17913/2
+    (defun completion--regex-pinyin (str)
+      (orderless-regexp (pinyinlib-build-regexp-string str)))
+    (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
+#+END_SRC emacs-lisp
+** init-completion.el 文件尾
+#+BEGIN_SRC emacs-lisp
+
+(provide 'init-completion)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; init-completion.el ends here
 #+END_SRC
