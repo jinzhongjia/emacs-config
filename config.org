@@ -68,6 +68,8 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 
 [[https://github.com/progfolio/elpaca][elpaca 是一款更加现代化的 GUI Emacs 包管理器，它拥有着相较于 straight.el]]
 
+以下源自官方的安装指南：
+
 #+BEGIN_SRC emacs-lisp
   (defvar elpaca-installer-version 0.7)
   (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
@@ -136,6 +138,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     (require 'init-edit)                  ; 编辑行为
     (require 'init-org)                   ; org相关设置
     (require 'init-completion)            ; 补全系统
+    (require 'init-dev)                   ; 版本管理
     )
 
 #+END_SRC
@@ -447,7 +450,299 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 
 #+END_SRC
 
-** org-auto-tangle自动tangle设置
+** org 配置
+
+#+begin_src emacs-lisp
+  (use-package org
+    :ensure nil
+    :mode ("\\.org\\'" . org-mode)
+    :hook ((org-mode . visual-line-mode)
+         (org-mode . my/org-prettify-symbols))
+    :commands (org-find-exact-headline-in-buffer org-set-tags)
+    :custom-face
+    ;; 设置Org mode标题以及每级标题行的大小
+    (org-document-title ((t (:height 1.75 :weight bold))))
+    (org-level-1 ((t (:height 1.2 :weight bold))))
+    (org-level-2 ((t (:height 1.15 :weight bold))))
+    (org-level-3 ((t (:height 1.1 :weight bold))))
+    (org-level-4 ((t (:height 1.05 :weight bold))))
+    (org-level-5 ((t (:height 1.0 :weight bold))))
+    (org-level-6 ((t (:height 1.0 :weight bold))))
+    (org-level-7 ((t (:height 1.0 :weight bold))))
+    (org-level-8 ((t (:height 1.0 :weight bold))))
+    (org-level-9 ((t (:height 1.0 :weight bold))))
+    ;; 设置代码块用上下边线包裹
+    (org-block-begin-line ((t (:underline t :background unspecified))))
+    (org-block-end-line ((t (:overline t :underline nil :background unspecified))))
+    :config
+    ;; ================================
+    ;; 在org mode里美化字符串
+    ;; ================================
+    (defun my/org-prettify-symbols ()
+      (setq prettify-symbols-alist
+          (mapcan (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
+                  '(
+                    ("[ ]"              . 9744)         ; ☐
+                    ("[X]"              . 9745)         ; ☑
+                    ("[-]"              . 8863)         ; ⊟
+                    ("#+begin_src"      . 9998)         ; ✎
+                    ("#+end_src"        . 9998)         ; ✎
+                    ("#+begin_example"  . 129083)       ; 🠻
+                    ("#+end_example"    . 129081)       ; 🠹
+                    ("#+results:"       . 9776)         ; ☰
+                    ("#+attr_latex:"    . "🄛")
+                    ("#+attr_html:"     . "🄗")
+                    ("#+attr_org:"      . "🄞")
+                    ("#+name:"          . "🄝")         ; 127261
+                    ("#+caption:"       . "🄒")         ; 127250
+                    ("#+date:"          . "📅")         ; 128197
+                    ("#+author:"        . "💁")         ; 128100
+                    ("#+setupfile:"     . 128221)       ; 📝
+                    ("#+email:"         . 128231)       ; 📧
+                    ("#+startup:"       . 10034)        ; ✲
+                    ("#+options:"       . 9965)         ; ⛭
+                    ("#+title:"         . 10162)        ; ➲
+                    ("#+subtitle:"      . 11146)        ; ⮊
+                    ("#+downloaded:"    . 8650)         ; ⇊
+                    ("#+language:"      . 128441)       ; 🖹
+                    ("#+begin_quote"    . 187)          ; »
+                    ("#+end_quote"      . 171)          ; «
+                    ("#+begin_results"  . 8943)         ; ⋯
+                    ("#+end_results"    . 8943)         ; ⋯
+                    )))
+      (setq prettify-symbols-unprettify-at-point t)
+      (prettify-symbols-mode 1))
+
+    ;; 提升latex预览的图片清晰度
+    (plist-put org-format-latex-options :scale 1.8)
+
+    ;; 设置标题行之间总是有空格；列表之间根据情况自动加空格
+    (setq org-blank-before-new-entry '((heading . t)
+                                     (plain-list-item . auto)
+                                     ))
+    :custom
+    ;; 启用一些子模块
+    (org-modules '(ol-bibtex ol-gnus ol-info ol-eww org-habit org-protocol))
+    ;; 在按M-RET时，是否根据光标所在的位置分行，这里设置为是
+    ;; (org-M-RET-may-split-line '((default . nil)))
+    ;; 一些Org mode自带的美化设置
+    ;; 标题行美化
+    (org-fontify-whole-heading-line t)
+    ;; 设置标题行折叠符号
+    (org-ellipsis " ▾")
+    ;; 在活动区域内的所有标题栏执行某些命令
+    (org-loop-over-headlines-in-active-region t)
+    ;; TODO标签美化
+    (org-fontify-todo-headline t)
+    ;; DONE标签美化
+    (org-fontify-done-headline t)
+    ;; 引用块美化
+    (org-fontify-quote-and-verse-blocks t)
+    ;; 隐藏宏标记
+    (org-hide-macro-markers t)
+    ;; 隐藏强调标签
+    (org-hide-emphasis-markers t)
+    ;; 高亮latex语法
+    (org-highlight-latex-and-related '(native script entities))
+    ;; 以UTF-8显示
+    (org-pretty-entities t)
+    ;; 是否隐藏标题栏的前置星号，这里我们通过org-modern来隐藏
+    ;; (org-hide-leading-stars t)
+    ;; 当启用缩进模式时自动隐藏前置星号
+    (org-indent-mode-turns-on-hiding-stars t)
+    ;; 自动启用缩进
+    (org-startup-indented nil)
+    ;; 根据标题栏自动缩进文本
+    (org-adapt-indentation nil)
+    ;; 自动显示图片
+    (org-startup-with-inline-images t)
+    ;; 默认以Overview的模式展示标题行
+    (org-startup-folded 'overview)
+    ;; 允许字母列表
+    (org-list-allow-alphabetical t)
+    ;; 列表的下一级设置
+    (org-list-demote-modify-bullet '(
+								   ("-"  . "+")
+                                   ("+"  . "1.")
+								   ("1." . "a.")
+								   ))
+    ;; 编辑时检查是否在折叠的不可见区域
+    (org-fold-catch-invisible-edits 'smart)
+    ;; 在当前位置插入新标题行还是在当前标题行后插入，这里设置为当前位置
+    (org-insert-heading-respect-content nil)
+    ;; 设置图片的最大宽度，如果有imagemagick支持将会改变图片实际宽度
+    ;; 四种设置方法：(1080), 1080, t, nil
+    (org-image-actual-width nil)
+    ;; imenu的最大深度，默认为2
+    (org-imenu-depth 4)
+    ;; 回车要不要触发链接，这里设置不触发
+    (org-return-follows-link nil)
+    ;; 上标^下标_是否需要特殊字符包裹，这里设置需要用大括号包裹
+    (org-use-sub-superscripts '{})
+    ;; 复制粘贴标题行的时候删除id
+    (org-clone-delete-id t)
+    ;; 粘贴时调整标题行的级别
+    (org-yank-adjusted-subtrees t)
+
+    ;; TOOD的关键词设置，可以设置不同的组
+    (org-todo-keywords '((sequence "TODO(t)" "HOLD(h!)" "WIP(i!)" "WAIT(w!)" "|" "DONE(d!)" "CANCELLED(c@/!)")
+					   (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f!)")))
+    ;; TODO关键词的样式设置
+    (org-todo-keyword-faces '(("TODO"       :foreground "#7c7c75" :weight bold)
+							("HOLD"       :foreground "#feb24c" :weight bold)
+							("WIP"        :foreground "#0098dd" :weight bold)
+							("WAIT"       :foreground "#9f7efe" :weight bold)
+							("DONE"       :foreground "#50a14f" :weight bold)
+							("CANCELLED"  :foreground "#ff6480" :weight bold)
+							("REPORT"     :foreground "magenta" :weight bold)
+							("BUG"        :foreground "red"     :weight bold)
+							("KNOWNCAUSE" :foreground "yellow"  :weight bold)
+							("FIXED"      :foreground "green"   :weight bold)))
+    ;; 当标题行状态变化时标签同步发生的变化
+    ;; Moving a task to CANCELLED adds a CANCELLED tag
+    ;; Moving a task to WAIT adds a WAIT tag
+    ;; Moving a task to HOLD adds WAIT and HOLD tags
+    ;; Moving a task to a done state removes WAIT and HOLD tags
+    ;; Moving a task to TODO removes WAIT, CANCELLED, and HOLD tags
+    ;; Moving a task to DONE removes WAIT, CANCELLED, and HOLD tags
+    (org-todo-state-tags-triggers
+     (quote (("CANCELLED" ("CANCELLED" . t))
+		   ("WAIT" ("WAIT" . t))
+		   ("HOLD" ("WAIT") ("HOLD" . t))
+		   (done ("WAIT") ("HOLD"))
+		   ("TODO" ("WAIT") ("CANCELLED") ("HOLD"))
+		   ("DONE" ("WAIT") ("CANCELLED") ("HOLD")))))
+    ;; 使用专家模式选择标题栏状态
+    (org-use-fast-todo-selection 'expert)
+    ;; 父子标题栏状态有依赖
+    (org-enforce-todo-dependencies t)
+    ;; 标题栏和任务复选框有依赖
+    (org-enforce-todo-checkbox-dependencies t)
+    ;; 优先级样式设置
+    (org-priority-faces '((?A :foreground "red")
+						(?B :foreground "orange")
+						(?C :foreground "yellow")))
+    ;; 标题行全局属性设置
+    (org-global-properties '(("EFFORT_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 7:00 8:00")
+						   ("APPT_WARNTIME_ALL" . "0 5 10 15 20 25 30 45 60")
+						   ("RISK_ALL" . "Low Medium High")
+						   ("STYLE_ALL" . "habit")))
+    ;; Org columns的默认格式
+    (org-columns-default-format "%25ITEM %TODO %SCHEDULED %DEADLINE %3PRIORITY %TAGS %CLOCKSUM %EFFORT{:}")
+    ;; 当状态从DONE改成其他状态时，移除 CLOSED: [timestamp]
+    (org-closed-keep-when-no-todo t)
+    ;; DONE时加上时间戳
+    (org-log-done 'time)
+    ;; 重复执行时加上时间戳
+    (org-log-repeat 'time)
+    ;; Deadline修改时加上一条记录
+    (org-log-redeadline 'note)
+    ;; Schedule修改时加上一条记录
+    (org-log-reschedule 'note)
+    ;; 以抽屉的方式记录
+    (org-log-into-drawer t)
+    ;; 紧接着标题行或者计划/截止时间戳后加上记录抽屉
+    (org-log-state-notes-insert-after-drawers nil)
+
+    ;; refile使用缓存
+    (org-refile-use-cache t)
+    ;; refile的目的地，这里设置的是agenda文件的所有标题
+    (org-refile-targets '((org-agenda-files . (:maxlevel . 9))))
+    ;; 将文件名加入到路径
+    (org-refile-use-outline-path 'file)
+    ;; 是否按步骤refile
+    (org-outline-path-complete-in-steps nil)
+    ;; 允许创建新的标题行，但需要确认
+    (org-refile-allow-creating-parent-nodes 'confirm)
+
+    ;; 设置标签的默认位置，默认是第77列右对齐
+    ;; (org-tags-column -77)
+    ;; 自动对齐标签
+    (org-auto-align-tags t)
+    ;; 标签不继承
+    (org-use-tag-inheritance nil)
+    ;; 在日程视图的标签不继承
+    (org-agenda-use-tag-inheritance nil)
+    ;; 标签快速选择
+    (org-use-fast-tag-selection t)
+    ;; 标签选择不需要回车确认
+    (org-fast-tag-selection-single-key t)
+    ;; 定义了有序属性的标题行也加上 OREDERD 标签
+    (org-track-ordered-property-with-tag t)
+    ;; 始终存在的的标签
+    (org-tag-persistent-alist '(("read"     . ?r)
+							  ("mail"     . ?m)
+							  ("emacs"    . ?e)
+							  ("study"    . ?s)
+							  ("work"     . ?w)))
+    ;; 预定义好的标签
+    (org-tag-alist '((:startgroup)
+				   ("crypt"    . ?c)
+				   ("linux"    . ?l)
+				   ("apple"    . ?a)
+				   ("noexport" . ?n)
+				   ("ignore"   . ?i)
+				   ("TOC"      . ?t)
+				   (:endgroup)))
+  )
+#+end_src
+
+** org-modern 美化 org
+
+#+begin_src emacs-lisp
+  (use-package org-modern
+    :ensure t
+    :hook (after-init . (lambda ()
+                          (setq org-modern-hide-stars 'leading)
+                          (global-org-modern-mode t)))
+    :config
+    ;; 标题行型号字符
+    (setq org-modern-star ["◉" "○" "✸" "✳" "◈" "◇" "✿" "❀" "✜"])
+    ;; 额外的行间距，0.1表示10%，1表示1px
+    (setq-default line-spacing 0.1)
+    ;; tag边框宽度，还可以设置为 `auto' 即自动计算
+    (setq org-modern-label-border 1)
+    ;; 设置表格竖线宽度，默认为3
+    (setq org-modern-table-vertical 2)
+    ;; 设置表格横线为0，默认为0.1
+    (setq org-modern-table-horizontal 0)
+    ;; 复选框美化
+    (setq org-modern-checkbox
+          '((?X . #("▢✓" 0 2 (composition ((2)))))
+            (?- . #("▢–" 0 2 (composition ((2)))))
+            (?\s . #("▢" 0 1 (composition ((1)))))))
+    ;; 列表符号美化
+    (setq org-modern-list
+          '((?- . "•")
+            (?+ . "◦")
+            (?* . "▹")))
+    ;; 代码块左边加上一条竖边线（需要Org mode顶头，如果启用了 `visual-fill-column-mode' 会很难看）
+    (setq org-modern-block-fringe t)
+    ;; 代码块类型美化，我们使用了 `prettify-symbols-mode'
+    (setq org-modern-block-name nil)
+    ;; #+关键字美化，我们使用了 `prettify-symbols-mode'
+    (setq org-modern-keyword nil)
+    )
+#+end_src
+
+** org-appear 自动展开强调链接
+
+当我们的光标移动到Org mode里的强调、链接上时，会自动展开，这样方便进行编辑。
+
+#+begin_src emacs-lisp
+  (use-package org-appear
+    :ensure t
+    :hook (org-mode . org-appear-mode)
+    :config
+    (setq org-appear-autolinks t)
+    (setq org-appear-autosubmarkers t)
+    (setq org-appear-autoentities t)
+    (setq org-appear-autokeywords t)
+    (setq org-appear-inside-latex t)
+    )
+#+end_src
+
+** org-auto-tangle 自动 tangle 设置
 
 [[https://github.com/yilkalargaw/org-auto-tangle][org-auto-tangle]] 插件可以在Org mode下自动进行tangle。
 
@@ -501,10 +796,46 @@ Emacs的补全设置。
 
 #+BEGIN_SRC emacs-lisp
   (use-package vertico
-    :init (vertico-mode))
+    :custom
+      (vertico-scroll-margin 0) ;; Different scroll margin
+      (vertico-count 20) ;; Show more candidates
+      (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
+      (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
+    :init
+    (vertico-mode))
 #+END_SRC
 
-** stavehist 保存 ~vertico~ 历史记录
+一些关于 emacs 的配置，可以提升 ~vertico~ 体验：
+
+#+BEGIN_SRC emacs-lisp
+  (use-package emacs
+    :ensure nil
+    :custom
+    ;; Support opening new minibuffers from inside existing minibuffers.
+    (enable-recursive-minibuffers t)
+    ;; Emacs 28 and newer: Hide commands in M-x which do not work in the current
+    ;; mode.  Vertico commands are hidden in normal buffers. This setting is
+    ;; useful beyond Vertico.
+    (read-extended-command-predicate #'command-completion-default-include-p)
+    :init
+    ;; Add prompt indicator to `completing-read-multiple'.
+    ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+    (defun crm-indicator (args)
+      (cons (format "[CRM%s] %s"
+                    (replace-regexp-in-string
+                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                     crm-separator)
+                    (car args))
+            (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+    ;; Do not allow the cursor in the minibuffer prompt
+    (setq minibuffer-prompt-properties
+          '(read-only t cursor-intangible t face minibuffer-prompt))
+    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
+#+END_SRC
+
+** savehist 保存 ~vertico~ 历史记录
 
 #+BEGIN_SRC emacs-lisp
   (use-package savehist
@@ -516,24 +847,15 @@ Emacs的补全设置。
 ** orderless 无序搜索
 
 #+BEGIN_SRC emacs-lisp
-  (use-package pinyinlib
-    :ensure t)
-  
   ;; orderless 是一种哲学思想
-(use-package orderless
-  :ensure t
-  :init
-  (setq completion-styles '(orderless partial-completion basic))
-  (setq orderless-component-separator "[ &]") ; & is for company because space will break completion
-  (setq completion-category-defaults nil)
-  (setq completion-category-overrides nil)
-  :config
-  ;; make completion support pinyin, refer to
-  ;; https://emacs-china.org/t/vertico/17913/2
-  (defun completion--regex-pinyin (str)
-    (orderless-regexp (pinyinlib-build-regexp-string str)))
-  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin)
-  )
+  (use-package orderless
+    :custom
+    ;; Configure a custom style dispatcher (see the Consult wiki)
+    (orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch))
+    (orderless-component-separator #'orderless-escapable-split-on-space)
+    (completion-styles '(orderless basic))
+    (completion-category-defaults nil)
+    (completion-category-overrides '((file (styles partial-completion)))))
 #+END_SRC emacs-lisp
 
 ** ~marginalia~ 增加提示信息支持
@@ -547,136 +869,149 @@ Emacs的补全设置。
 #+END_SRC
 
 ** consult 配置
+
+~consult~ 提供查询
+
 #+BEGIN_SRC emacs-lisp
-(use-package consult
-  :after org
-  :bind (([remap goto-line]                     . consult-goto-line)
-         ([remap isearch-forward]               . consult-line-symbol-at-point) ; my-consult-ripgrep-or-line
-         ([remap switch-to-buffer]              . consult-buffer)
-         ([remap switch-to-buffer-other-window] . consult-buffer-other-window)
-         ([remap switch-to-buffer-other-frame]  . consult-buffer-other-frame)
-         ([remap yank-pop]                      . consult-yank-pop)
-         ([remap apropos]                       . consult-apropos)
-         ([remap bookmark-jump]                 . consult-bookmark)
-         ([remap goto-line]                     . consult-goto-line)
-         ([remap imenu]                         . consult-imenu)
-         ([remap multi-occur]                   . consult-multi-occur)
-         ([remap recentf-open-files]            . consult-recent-file)
-         ("C-x j"                               . consult-mark)
-         ("C-c g"                               . consult-ripgrep)
-         ("C-c f"                               . consult-find)
-         ("\e\ef"                               . consult-locate) ; need to enable locate first
-         ("C-c n h"                             . my/consult-find-org-headings)
-         :map org-mode-map
-         ("C-c C-j"                             . consult-org-heading)
-         :map minibuffer-local-map
-         ("C-r"                                 . consult-history)
+  (use-package consult
+    :ensure t
+    :after org
+    :bind (;; C-c bindings in `mode-specific-map'
+         ("C-c M-x" . consult-mode-command)
+         ("C-c h" . consult-history)
+         ("C-c k" . consult-kmacro)
+         ("C-c m" . consult-man)
+         ("C-c i" . consult-info)
+         ([remap Info-search] . consult-info)
+         ;; C-x bindings in `ctl-x-map'
+         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+         ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+         ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+         ;; M-g bindings in `goto-map'
+         ("M-g e" . consult-compile-error)
+         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ;; M-s bindings in `search-map'
+         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+         ("M-s c" . consult-locate)
+         ("M-s g" . consult-grep)
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ("M-s L" . consult-line-multi)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("M-s e" . consult-isearch-history)
          :map isearch-mode-map
-         ("C-;"                                 . consult-line)
-         :map prog-mode-map
-         ("C-c C-j"                             . consult-outline)
+         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;; Minibuffer history
+         :map minibuffer-local-map
+         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+         ("M-r" . consult-history)                ;; orig. previous-matching-history-element
+         :map org-mode-map
+         ("C-c C-j" . consult-outline)
          )
-  :hook (completion-list-mode . consult-preview-at-point-mode)
-  :init
-  ;; Optionally configure the register formatting. This improves the register
-  ;; preview for `consult-register', `consult-register-load',
-  ;; `consult-register-store' and the Emacs built-ins.
-  (setq register-preview-delay 0
+    :hook (completion-list-mode . consult-preview-at-point-mode)
+    :init
+    (setq register-preview-delay 0.5
         register-preview-function #'consult-register-format)
-
-  ;; Optionally tweak the register preview window.
-  ;; This adds thin lines, sorting and hides the mode line of the window.
-  (advice-add #'register-preview :override #'consult-register-window)
-
-  ;; Use Consult to select xref locations with preview
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
-
-  ;; MacOS locate doesn't support `--ignore-case --existing' args.
-  (setq consult-locate-args (pcase system-type
-                              ('gnu/linux "locate --ignore-case --existing --regex")
-                              ('darwin "mdfind -name")))
-  :config
-  (consult-customize
-   consult-theme
-   :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
-   :preview-key (kbd "M-."))
-
-  ;; Optionally configure the narrowing key.
-  ;; Both < and C-+ work reasonably well.
-  (setq consult-narrow-key "<") ;; (kbd "C-+")
-
-  (autoload 'projectile-project-root "projectile")
-  (setq consult-project-root-function #'projectile-project-root)
-
-  ;; search all org file headings under a directory, see:
-  ;; https://emacs-china.org/t/org-files-heading-entry/20830/4
-  (defun my/consult-find-org-headings (&optional match)
-    "find headngs in all org files."
-    (interactive)
-    (consult-org-heading match (directory-files org-directory t "^[0-9]\\{8\\}.+\\.org$")))
-
-  ;; Use `consult-ripgrep' instead of `consult-line' in large buffers
-  (defun consult-line-symbol-at-point ()
-    "Consult line the synbol where the point is"
-    (interactive)
-    (consult-line (thing-at-point 'symbol)))
-  )
+    (advice-add #'register-preview :override #'consult-register-window)
+    (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref))
 #+END_SRC
 
 ** corfu 补全框架
 
-TODO: 应该需要再进行额外的调整
+[[https://github.com/minad/corfu][corfu 是一个补全框架，相较于 ~company~ 更加现代化]]
 
 #+BEGIN_SRC emacs-lisp
-(use-package corfu
-  :config (global-corfu-mode)
-  :bind
-  (:map corfu-map
-        ("SPC" . corfu-insert-separator)    ; configure space for separator insertion
-        ("M-q" . corfu-quick-complete)      ; use C-g to exit
-        ("TAB" . corfu-next)
-        ([tab] . corfu-next)
-        ("S-TAB" . corfu-previous)
-        ([backtab] . corfu-previous))
-  :config
-  ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 0)
-  (setq tab-always-indent 'complete)
+  (use-package corfu
+    :init (global-corfu-mode)
+    :custom
+      (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+      ;(corfu-auto t)                 ;; Enable auto completion
+      (corfu-separator ?\s)          ;; Orderless field separator
+      ;(corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+      ;(corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+      ;(corfu-preview-current nil)    ;; Disable current candidate preview
+      (corfu-preselect 'prompt)      ;; Preselect the prompt
+      ;(corfu-on-exact-match nil)     ;; Configure handling of exact matches
+      ;(corfu-scroll-margin 5)        ;; Use scroll margin
+      )
+#+END_SRC
 
-  (defun corfu-enable-always-in-minibuffer ()
-    "Enable Corfu in the minibuffer if Vertico/Mct are not active."
-    (unless (or (bound-and-true-p mct--active)
-                (bound-and-true-p vertico--input))
-      ;; (setq-local corfu-auto nil) Enable/disable auto completion
-      (corfu-mode 1)))
-  (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
+** cape 补全框架
 
-  ;; enable corfu in eshell
-  (add-hook 'eshell-mode-hook
-            (lambda ()
-              (setq-local corfu-auto nil)
-              (corfu-mode)))
-
-  ;; For Eshell
-  ;; ===========
-  ;; avoid press RET twice in Eshell
-  (defun corfu-send-shell (&rest _)
-    "Send completion candidate when inside comint/eshell."
-    (cond
-     ((and (derived-mode-p 'eshell-mode) (fboundp 'eshell-send-input))
-      (eshell-send-input))
-     ((and (derived-mode-p 'comint-mode)  (fboundp 'comint-send-input))
-      (comint-send-input))))
-
-  (advice-add #'corfu-insert :after #'corfu-send-shell)
-
-  :custom
-  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+#+BEGIN_SRC emacs-lisp
+  (use-package cape
+    ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
+    ;; Press C-c p ? to for help.
+    ;:bind ("C-c p" . cape-prefix-map) ;; Alternative keys: M-p, M-+, ...
+    ;; Alternatively bind Cape commands individually.
+    ;; :bind (("C-c p d" . cape-dabbrev)
+    ;;        ("C-c p h" . cape-history)
+    ;;        ("C-c p f" . cape-file)
+    ;;        ...)
+    :init
+    ;; Add to the global default value of `completion-at-point-functions' which is
+    ;; used by `completion-at-point'.  The order of the functions matters, the
+    ;; first function returning a result wins.  Note that the list of buffer-local
+    ;; completion functions takes precedence over the global list.
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions #'cape-keyword)  ; programming language keyword
+    (add-to-list 'completion-at-point-functions #'cape-ispell)
+    (add-to-list 'completion-at-point-functions #'cape-dict)
+    (add-to-list 'completion-at-point-functions #'cape-symbol)   ; elisp symbol
+    (add-to-list 'completion-at-point-functions #'cape-line)
+    ;; (add-hook 'completion-at-point-functions #'cape-history)
+    :config
+    (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify)
+    ;; ...
   )
+#+END_SRC
+
+** yasnippet 补全框架
+
+补全框架 yasnippet
+
+考虑做些修改
+
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :hook
+    (prog-mode . yas-minor-mode)
+    :config
+    (yas-reload-all))
+
+  (use-package doom-snippets
+    :ensure (doom-snippets :type git :host github :repo "doomemacs/snippets" :files ("*.el" "*"))
+    :after yasnippet)
+
+  ;; 再装一个通用模板库，省得没 template 用
+  (use-package yasnippet-snippets
+    :after (yasnippet))
+
 #+END_SRC
 
 ** init-completion.el 文件尾
@@ -686,4 +1021,54 @@ TODO: 应该需要再进行额外的调整
 (provide 'init-completion)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; init-completion.el ends here
+#+END_SRC
+
+* init-dev.tl
+:PROPERTIES:
+:HEADER-ARGS: :tangle lisp/init-dev.el :mkdirp yes
+:END:
+
+开发使用的一些工具！
+
+** init-dev.el 文件头
+#+BEGIN_SRC emacs-lisp
+;;; init-dev.el --- Development settings -*- lexical-binding: t -*-
+;;; Commentary:
+
+;;; Code:
+
+#+END_SRC
+
+** magit 版本管理
+
+[[https://github.com/magit/magit][magit]] 是Emacs里的另一个杀手级应用！可以直接在Emacs里进行基于git的版本管理。
+
+#+begin_src emacs-lisp
+  (use-package magit)
+#+end_src
+
+** diff-hl高亮显示修改的部分
+
+[[https://github.com/dgutov/diff-hl][diff-hl]] 插件可以在左侧高亮显示相对于远程仓库的修改部分。
+
+#+BEGIN_SRC emacs-lisp
+  (use-package diff-hl
+    :init
+    (global-diff-hl-mode t))
+#+END_SRC
+
+** magit-delta增强git diff
+
+[[https://github.com/dandavison/magit-delta][magit-delta]] 插件可以通过 =git-delta= 来更优化的方式显示diff内容（需要提前安装 =git-delta= ）。
+
+#+BEGIN_SRC emacs-lisp
+(use-package magit-delta
+  :hook (magit-mode . magit-delta-mode))
+#+END_SRC
+** init-dev.el 文件尾
+#+BEGIN_SRC emacs-lisp
+
+(provide 'init-dev)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; init-dev.el ends here
 #+END_SRC
