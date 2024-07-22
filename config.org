@@ -139,6 +139,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     (require 'init-org)                   ; org相关设置
     (require 'init-completion)            ; 补全系统
     (require 'init-dev)                   ; 版本管理
+    (require 'init-tools)                 ; tools
     )
 
 #+END_SRC
@@ -1071,4 +1072,46 @@ Emacs的补全设置。
 (provide 'init-dev)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; init-dev.el ends here
+#+END_SRC
+
+* init-tools.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle lisp/init-tools.el :mkdirp yes
+:END:
+
+** init-tools.el 文件头
+
+#+BEGIN_SRC emacs-lisp
+;;; init-tools.el --- Tools settings -*- lexical-binding: t -*-
+;;; Commentary: Useful tools to make Emacs efficient!
+
+;;; Code:
+
+#+END_SRC
+
+** helpful帮助增强
+
+[[https://github.com/Wilfred/helpful][helpful]] 插件提供了帮助增强。
+
+#+begin_src emacs-lisp
+  (use-package helpful
+    :ensure t
+    :commands (helpful-callable helpful-variable helpful-command helpful-key helpful-mode)
+    :bind (([remap describe-command] . helpful-command)
+           ("C-h f" . helpful-callable)
+           ("C-h F" . helpful-function)
+           ("C-h v" . helpful-variable)
+           ("C-c C-d" . heloful-at-point)
+           ("C-h x" . helpful-command)
+           ([remap describe-key] . helpful-key))
+    )
+#+end_src
+
+** init-tools.el 文件尾
+
+#+BEGIN_SRC emacs-lisp
+
+(provide 'init-tools)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; init-tools.el ends here
 #+END_SRC
