@@ -143,6 +143,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     (require 'init-lsp)                   ; lsp 支持
     (require 'init-treesitter)            ; treesitter 支持
     (require 'init-book)                  ; book 支持
+    (require 'init-lang)                  ; lang 支持
     )
 
 #+END_SRC
@@ -1451,4 +1452,34 @@ emacs 的 calibredb 客户端，支持在 emacs 中管理和阅读图书！
 (provide 'init-book)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; init-book.el ends here
+#+END_SRC
+
+* init-lang.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle lisp/init-lang.el :mkdirp yes
+:END:
+
+** init-lang.el 文件头
+
+#+BEGIN_SRC emacs-lisp
+;;; init-lang.el --- Tools settings -*- lexical-binding: t -*-
+;;; Commentary: Useful tools to make Emacs efficient!
+
+;;; Code:
+
+#+END_SRC
+
+** zig-mode
+
+#+begin_src emacs-lisp
+  (use-package zig-mode)
+#+end_src
+
+** init-lang.el 文件尾
+
+#+BEGIN_SRC emacs-lisp
+
+(provide 'init-lang)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; init-lang.el ends here
 #+END_SRC
