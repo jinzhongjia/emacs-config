@@ -1102,6 +1102,7 @@ Emacs的补全设置。
   (use-package yasnippet
     :hook
     (prog-mode . yas-minor-mode)
+    (org-mode . yas-minor-mode)
     :config
     (yas-reload-all))
 
