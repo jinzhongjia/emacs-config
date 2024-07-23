@@ -964,7 +964,7 @@ Emacs的补全设置。
    :defer t
    :custom
    (vertico-scroll-margin 0) ;; Different scroll margin
-   ;(vertico-count 20) ;; Show more candidates
+   (vertico-count 20) ;; Show more candidates
    (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
    (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
    :init (vertico-mode))
@@ -1593,7 +1593,10 @@ emacs 的 calibredb 客户端，支持在 emacs 中管理和阅读图书！
 ~zig-mode~ 是一个由 ziglang 官方维护的包。
 
 #+begin_src emacs-lisp
-  (use-package zig-mode :defer t)
+  (use-package
+   zig-mode
+   :defer t
+   :custom (zig-format-on-save nil "disable zig format on save"))
 #+end_src
 
 ** elisp lang
