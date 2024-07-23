@@ -393,6 +393,15 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   (use-package minions :config (minions-mode))
 #+END_SRC
 
+** good-scroll
+
+#+begin_src emacs-lisp
+  (use-package
+   good-scroll
+   :if window-system ; 在图形化界面时才使用这个插件
+   :init (good-scroll-mode))
+#+end_src
+
 ** init-ui.el 文件尾
 
 #+BEGIN_SRC emacs-lisp
@@ -456,6 +465,23 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
    (auto-revert-check-vc-info t)
    (global-auto-revert-non-file-buffers t))
 #+END_SRC
+
+** symbol-overlay
+
+更高效地符号高亮插件
+
+#+begin_src emacs-lisp
+  (use-package symbol-overlay :hook (prog-mode . symbol-overlay-mode))
+  ;; 按下 F3 键就可高亮当前符号
+#+end_src
+
+** flycheck
+
+flycheck 属于是一个广泛使用的语法检查包！
+
+#+begin_src emacs-lisp
+  (use-package flycheck :init (global-flycheck-mode))
+#+end_src
 
 ** 🌈彩虹括号匹配
 
@@ -853,6 +879,14 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     :hook (org-mode . toc-org-mode))
 #+end_src
 
+** ox-gfm
+
+将 org 导出为 github 风格的 markdown
+
+#+begin_src emacs-lisp
+  (use-package ox-gfm)
+#+end_src
+
 ** 插入链接
 
 我们可以在 org 文件里通过 ~C-c C-l~ 来插入链接。
@@ -1246,6 +1280,26 @@ Emacs的补全设置。
 
 #+END_SRC
 
+** mwin
+
+[[https://github.com/alezost/mwim.el][mwin]] 改进 ~C-a~ 和 ~C-e~ 功能
+
+#+begin_src emacs-lisp
+  (use-package
+   mwim
+   :bind
+   ("C-a" . mwim-beginning-of-code-or-line)
+   ("C-e" . mwim-end-of-code-or-line))
+#+end_src
+
+** ace-window 窗口导航
+
+[[https://github.com/abo-abo/ace-window][ace-window]] 对每个 window 增加编号方便跳转！
+
+#+begin_src emacs-lisp
+  (use-package ace-window :bind (("C-x o" . 'ace-window)))
+#+end_src
+
 ** helpful帮助增强
 
 [[https://github.com/Wilfred/helpful][helpful]] 插件提供了帮助增强。
@@ -1539,7 +1593,11 @@ emacs 的 calibredb 客户端，支持在 emacs 中管理和阅读图书！
   (use-package zig-mode)
 #+end_src
 
-** elisp format
+** elisp lang
+
+为 elisp 做相关配置
+
+*** elisp-autofmt
 
 [[https://codeberg.org/ideasman42/emacs-elisp-autofmt][elisp-autofmt]] ，用于自动格式化 elisp 代码。
 
@@ -1547,6 +1605,14 @@ emacs 的 calibredb 客户端，支持在 emacs 中管理和阅读图书！
   (use-package elisp-autofmt
     :commands (elisp-autofmt-mode elisp-autofmt-buffer)
     :hook (emacs-lisp-mode . elisp-autofmt-mode))
+#+end_src
+
+*** highlight-defined
+
+高亮 elisp 中已经定义的符号
+
+#+begin_src emacs-lisp
+  (use-package highlight-defined :hook (elisp-mode . highlight-defined-mode))
 #+end_src
 
 ** init-lang.el 文件尾
