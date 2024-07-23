@@ -399,6 +399,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   (use-package
    good-scroll
    :if window-system ; 在图形化界面时才使用这个插件
+   :defer t
    :init (good-scroll-mode))
 #+end_src
 
@@ -471,7 +472,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 更高效地符号高亮插件
 
 #+begin_src emacs-lisp
-  (use-package symbol-overlay :hook (prog-mode . symbol-overlay-mode))
+  (use-package symbol-overlay :defer t :hook (prog-mode . symbol-overlay-mode))
   ;; 按下 F3 键就可高亮当前符号
 #+end_src
 
@@ -480,7 +481,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 flycheck 属于是一个广泛使用的语法检查包！
 
 #+begin_src emacs-lisp
-  (use-package flycheck :init (global-flycheck-mode))
+  (use-package flycheck :defer t :init (global-flycheck-mode))
 #+end_src
 
 ** 🌈彩虹括号匹配
@@ -490,7 +491,6 @@ flycheck 属于是一个广泛使用的语法检查包！
 #+begin_src emacs-lisp
   (use-package
    rainbow-delimiters
-   :ensure t
    :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
@@ -521,6 +521,7 @@ flycheck 属于是一个广泛使用的语法检查包！
 #+begin_src emacs-lisp
   (use-package
    undo-tree
+   :defer t
    :init (global-undo-tree-mode)
    :config
    ;; don't save undo history to local files
@@ -808,7 +809,6 @@ flycheck 属于是一个广泛使用的语法检查包！
 #+begin_src emacs-lisp
   (use-package
    org-modern
-   :ensure t
    :hook
    (after-init
     .
@@ -848,7 +848,6 @@ flycheck 属于是一个广泛使用的语法检查包！
 #+begin_src emacs-lisp
   (use-package
    org-appear
-   :ensure t
    :hook (org-mode . org-appear-mode)
    :config
    (setq org-appear-autolinks t)
@@ -865,7 +864,6 @@ flycheck 属于是一个广泛使用的语法检查包！
 #+BEGIN_SRC emacs-lisp
   (use-package
    org-auto-tangle
-   :ensure t
    :hook (org-mode . org-auto-tangle-mode)
    :config (setq org-auto-tangle-default t))
 #+END_SRC
@@ -884,7 +882,7 @@ flycheck 属于是一个广泛使用的语法检查包！
 将 org 导出为 github 风格的 markdown
 
 #+begin_src emacs-lisp
-  (use-package ox-gfm)
+  (use-package ox-gfm :defer t)
 #+end_src
 
 ** 插入链接
@@ -963,6 +961,7 @@ Emacs的补全设置。
 #+BEGIN_SRC emacs-lisp
   (use-package
    vertico
+   :defer t
    :custom
    (vertico-scroll-margin 0) ;; Different scroll margin
    ;(vertico-count 20) ;; Show more candidates
@@ -1027,6 +1026,7 @@ Emacs的补全设置。
   ;; orderless 是一种哲学思想
   (use-package
    orderless
+   :defer t
    :custom
    ;; Configure a custom style dispatcher (see the Consult wiki)
    ;(orderless-style-dispatchers
@@ -1058,8 +1058,6 @@ Emacs的补全设置。
 #+BEGIN_SRC emacs-lisp
   (use-package
    consult
-   :ensure t
-   :after org
    :bind
    ( ;; C-c bindings in `mode-specific-map'
     ("C-c M-x" . consult-mode-command)
@@ -1136,6 +1134,7 @@ Emacs的补全设置。
 #+BEGIN_SRC emacs-lisp
   (use-package
    corfu
+   :defer t
    :init (global-corfu-mode)
    ;:custom
    ;(corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
@@ -1155,6 +1154,7 @@ Emacs的补全设置。
 #+BEGIN_SRC emacs-lisp
   (use-package
    cape
+   :defer t
    ;; Bind prefix keymap providing all Cape commands under a mnemonic key.
    ;; Press C-c p ? to for help.
    ;:bind ("C-c p" . cape-prefix-map) ;; Alternative keys: M-p, M-+, ...
@@ -1239,7 +1239,7 @@ Emacs的补全设置。
 [[https://github.com/magit/magit][magit]] 是Emacs里的另一个杀手级应用！可以直接在Emacs里进行基于git的版本管理。
 
 #+begin_src emacs-lisp
-  (use-package magit)
+  (use-package magit :defer t)
 #+end_src
 
 ** diff-hl高亮显示修改的部分
@@ -1247,7 +1247,7 @@ Emacs的补全设置。
 [[https://github.com/dgutov/diff-hl][diff-hl]] 插件可以在左侧高亮显示相对于远程仓库的修改部分。
 
 #+BEGIN_SRC emacs-lisp
-  (use-package diff-hl :init (global-diff-hl-mode t))
+  (use-package diff-hl :defer t :init (global-diff-hl-mode t))
 #+END_SRC
 
 ** magit-delta增强git diff
@@ -1306,7 +1306,6 @@ Emacs的补全设置。
 
 #+begin_src emacs-lisp
   (use-package helpful
-    :ensure t
     :commands (helpful-callable helpful-variable helpful-command helpful-key helpful-mode)
     :bind (([remap describe-command] . helpful-command)
            ("C-h f" . helpful-callable)
@@ -1323,7 +1322,7 @@ Emacs的补全设置。
 一个 HTTP 库
 
 #+begin_src emacs-lisp
-  (use-package plz)
+  (use-package plz :defer t)
 #+end_src
 
 ** go-translate
@@ -1334,6 +1333,7 @@ Emacs的补全设置。
 
 #+begin_src emacs-lisp
   (use-package go-translate
+    :defer t
     :custom (setq gt-langs '(en zh))
     (setq gt-default-translator (gt-translator :engines (gt-youdao-dict-engine)))
   )
@@ -1452,6 +1452,7 @@ lsp-bridge 的优势：
 #+begin_src emacs-lisp
   (use-package
    lsp-bridge
+   :defer t
    :ensure
    '(lsp-bridge
      :type git
@@ -1494,6 +1495,7 @@ lsp-bridge 的优势：
 #+begin_src emacs-lisp
   (use-package
    treesit-auto
+   :defer t
    :custom (treesit-auto-install 'prompt)
    :config
    (treesit-auto-add-to-auto-mode-alist 'all)
@@ -1507,6 +1509,7 @@ lsp-bridge 的优势：
 
 #+begin_src emacs-lisp
   (use-package ts-fold
+    :defer t
     :ensure (ts-fold :type git :host github :repo "emacs-tree-sitter/ts-fold"))
 #+end_src
 
@@ -1590,7 +1593,7 @@ emacs 的 calibredb 客户端，支持在 emacs 中管理和阅读图书！
 ~zig-mode~ 是一个由 ziglang 官方维护的包。
 
 #+begin_src emacs-lisp
-  (use-package zig-mode)
+  (use-package zig-mode :defer t)
 #+end_src
 
 ** elisp lang
