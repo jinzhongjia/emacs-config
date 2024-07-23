@@ -24,3 +24,4 @@ blink-search
 blink-search.db
 nov-places
 *.el
+/elisp-autofmt-cache/
