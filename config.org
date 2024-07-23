@@ -393,16 +393,6 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   (use-package minions :config (minions-mode))
 #+END_SRC
 
-** good-scroll
-
-#+begin_src emacs-lisp
-  (use-package
-   good-scroll
-   :if window-system ; 在图形化界面时才使用这个插件
-   :defer t
-   :init (good-scroll-mode))
-#+end_src
-
 ** init-ui.el 文件尾
 
 #+BEGIN_SRC emacs-lisp
