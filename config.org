@@ -1621,6 +1621,14 @@ emacs 的 calibredb 客户端，支持在 emacs 中管理和阅读图书！
   (use-package highlight-defined :hook (elisp-mode . highlight-defined-mode))
 #+end_src
 
+** nix-mode for nixlang
+
+~nix-mode~ 是由 nix 官方维护的次要模式
+
+#+begin_src emacs-lisp
+  (use-package nix-mode :mode "\\.nix\\'")
+#+end_src
+
 ** init-lang.el 文件尾
 
 #+BEGIN_SRC emacs-lisp
