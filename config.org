@@ -995,10 +995,12 @@ Emacs的补全设置。
    orderless
    :custom
    ;; Configure a custom style dispatcher (see the Consult wiki)
-   (orderless-style-dispatchers
-    '(+orderless-consult-dispatch orderless-affix-dispatch))
-   (orderless-component-separator #'orderless-escapable-split-on-space)
-   (completion-styles '(orderless-flex flex))
+   ;(orderless-style-dispatchers
+   ; '(+orderless-consult-dispatch orderless-affix-dispatch))
+   ;(orderless-component-separator #'orderless-escapable-split-on-space)
+   (completion-styles '(orderless flex))
+   (orderless-matching-styles
+    '(orderless-regexp orderless-literal orderless-flex))
    (completion-category-defaults nil)
    (completion-category-overrides '((file (styles partial-completion)))))
 #+end_src
