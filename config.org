@@ -909,7 +909,7 @@ Emacs的补全设置。
   (use-package vertico
     :custom
       (vertico-scroll-margin 0) ;; Different scroll margin
-      (vertico-count 20) ;; Show more candidates
+      ;(vertico-count 20) ;; Show more candidates
       (vertico-resize t) ;; Grow and shrink the Vertico minibuffer
       (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
     :init
@@ -946,19 +946,35 @@ Emacs的补全设置。
     (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
 #+END_SRC
 
+*** vertico-directory
+
+#+begin_src emacs-lisp
+  ;; Configure directory extension.
+  (use-package vertico-directory
+    :after vertico
+    :ensure nil
+    ;; More convenient directory navigation commands
+    :bind (:map vertico-map
+                ("RET" . vertico-directory-enter)
+                ("DEL" . vertico-directory-delete-char)
+                ("M-DEL" . vertico-directory-delete-word))
+    ;; Tidy shadowed file names
+    :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
+#+end_src
+
 ** orderless 无序搜索
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; orderless 是一种哲学思想
   (use-package orderless
     :custom
     ;; Configure a custom style dispatcher (see the Consult wiki)
     (orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch))
     (orderless-component-separator #'orderless-escapable-split-on-space)
-    (completion-styles '(orderless basic))
+    (completion-styles '(orderless-flex flex))
     (completion-category-defaults nil)
     (completion-category-overrides '((file (styles partial-completion)))))
-#+END_SRC emacs-lisp
+#+end_src
 
 ** ~marginalia~ 增加提示信息支持
 
