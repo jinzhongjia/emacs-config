@@ -57,11 +57,10 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 ** init.el 文件头
 
 #+BEGIN_SRC emacs-lisp
-;;; init.el --- The main init entry for Emacs -*- lexical-binding: t -*-
-;;; Commentary:
+  ;;; init.el --- The main init entry for Emacs -*- lexical-binding: t -*-
+  ;;; Commentary:
 
-;;; Code:
-
+  ;;; Code:
 #+END_SRC
 
 ** 使用 ~elpaca~ 作为包管理器
@@ -75,34 +74,65 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
   (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
   (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-  (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-				:ref nil :depth 1
-				:files (:defaults "elpaca-test.el" (:exclude "extensions"))
-				:build (:not elpaca--activate-package)))
-  (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-	 (build (expand-file-name "elpaca/" elpaca-builds-directory))
-	 (order (cdr elpaca-order))
-	 (default-directory repo))
-    (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (defvar elpaca-order
+    '(elpaca
+      :repo "https://github.com/progfolio/elpaca.git"
+      :ref nil
+      :depth 1
+      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+      :build (:not elpaca--activate-package)))
+  (let* ((repo (expand-file-name "elpaca/" elpaca-repos-directory))
+         (build (expand-file-name "elpaca/" elpaca-builds-directory))
+         (order (cdr elpaca-order))
+         (default-directory repo))
+    (add-to-list
+     'load-path
+     (if (file-exists-p build)
+         build
+       repo))
     (unless (file-exists-p repo)
       (make-directory repo t)
-      (when (< emacs-major-version 28) (require 'subr-x))
+      (when (< emacs-major-version 28)
+        (require 'subr-x))
       (condition-case-unless-debug err
-	  (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-		   ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-						   ,@(when-let ((depth (plist-get order :depth)))
-						       (list (format "--depth=%d" depth) "--no-single-branch"))
-						   ,(plist-get order :repo) ,repo))))
-		   ((zerop (call-process "git" nil buffer t "checkout"
-					 (or (plist-get order :ref) "--"))))
-		   (emacs (concat invocation-directory invocation-name))
-		   ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-					 "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-		   ((require 'elpaca))
-		   ((elpaca-generate-autoloads "elpaca" repo)))
-	      (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-	    (error "%s" (with-current-buffer buffer (buffer-string))))
-	((error) (warn "%s" err) (delete-directory repo 'recursive))))
+          (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                   ((zerop
+                     (apply #'call-process
+                            `("git" nil ,buffer t "clone" ,@
+                              (when-let ((depth (plist-get order :depth)))
+                                (list
+                                 (format "--depth=%d" depth)
+                                 "--no-single-branch"))
+                              ,(plist-get order :repo) ,repo))))
+                   ((zerop
+                     (call-process "git"
+                                   nil
+                                   buffer
+                                   t
+                                   "checkout"
+                                   (or (plist-get order :ref) "--"))))
+                   (emacs (concat invocation-directory invocation-name))
+                   ((zerop
+                     (call-process emacs
+                                   nil
+                                   buffer
+                                   nil
+                                   "-Q"
+                                   "-L"
+                                   "."
+                                   "--batch"
+                                   "--eval"
+                                   "(byte-recompile-directory \".\" 0 'force)")))
+                   ((require 'elpaca))
+                   ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn
+              (message "%s" (buffer-string))
+              (kill-buffer buffer))
+            (error
+             "%s"
+             (with-current-buffer buffer
+               (buffer-string))))
+        ((error) (warn "%s" err) (delete-directory repo 'recursive))))
     (unless (require 'elpaca-autoloads nil t)
       (require 'elpaca)
       (elpaca-generate-autoloads "elpaca" repo)
@@ -118,9 +148,10 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 #+BEGIN_SRC emacs-lisp
   (setq use-package-always-ensure t)
 
-  (elpaca elpaca-use-package
-  ;; Enable use-package :ensure support for Elpaca.
-  (elpaca-use-package-mode))
+  (elpaca
+   elpaca-use-package
+   ;; Enable use-package :ensure support for Elpaca.
+   (elpaca-use-package-mode))
 #+END_SRC
 
 ** 加载其他的模块
@@ -134,27 +165,26 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   ;; 加载各模块化配置
   ;; 不要在`*message*'缓冲区显示加载模块化配置的信息
   (with-temp-message ""
-    (require 'init-ui)                    ; UI交互
-    (require 'init-edit)                  ; 编辑行为
-    (require 'init-org)                   ; org相关设置
-    (require 'init-completion)            ; 补全系统
-    (require 'init-dev)                   ; 版本管理
-    (require 'init-tools)                 ; tools
-    (require 'init-lsp)                   ; lsp 支持
-    (require 'init-treesitter)            ; treesitter 支持
-    (require 'init-book)                  ; book 支持
-    (require 'init-lang)                  ; lang 支持
+    (require 'init-ui) ; UI交互
+    (require 'init-edit) ; 编辑行为
+    (require 'init-org) ; org相关设置
+    (require 'init-completion) ; 补全系统
+    (require 'init-dev) ; 版本管理
+    (require 'init-tools) ; tools
+    (require 'init-lsp) ; lsp 支持
+    (require 'init-treesitter) ; treesitter 支持
+    (require 'init-book) ; book 支持
+    (require 'init-lang) ; lang 支持
     )
-
 #+END_SRC
 
 ** init.el 文件尾
 
 #+BEGIN_SRC emacs-lisp
 
-(provide 'init)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; init.el ends here
+  (provide 'init)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init.el ends here
 #+END_SRC
 
 * init-ui.el
@@ -164,11 +194,10 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 
 ** init-ui.el 文件头
 #+BEGIN_SRC emacs-lisp
-;;; init-ui.el --- UI settings -*- lexical-binding: t -*-
-;;; Commentary:
+  ;;; init-ui.el --- UI settings -*- lexical-binding: t -*-
+  ;;; Commentary:
 
-;;; Code:
-
+  ;;; Code:
 #+END_SRC
 
 ** ef主题
@@ -176,144 +205,143 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 [[https://protesilaos.com/emacs/ef-themes][ef themes]] 是我非常喜欢的一个主题包。
 
 #+BEGIN_SRC emacs-lisp
-(use-package ef-themes
-  :init
-  (ef-themes-select 'ef-cyprus))
+  (use-package ef-themes :init (ef-themes-select 'ef-cyprus))
 #+END_SRC
 
 ** 调整启动窗口大小
 
 #+BEGIN_SRC emacs-lisp
-;; 设置窗口大小，仅仅在图形界面需要设置
-(when (display-graphic-p)
-  (let ((top    0)                                     ; 顶不留空
-        (left   (/ (x-display-pixel-width) 10))        ; 左边空10%
-        (height (round (* 0.8                          ; 窗体高度为0.8倍的显示高度
-                          (/ (x-display-pixel-height)
-                             (frame-char-height))))))
-    (let ((width  (round (* 2.5 height))))             ; 窗体宽度为2.5倍高度
-      (setq default-frame-alist nil)
-      (add-to-list 'default-frame-alist (cons 'top top))
-      (add-to-list 'default-frame-alist (cons 'left left))
-      (add-to-list 'default-frame-alist (cons 'height height))
-      (add-to-list 'default-frame-alist (cons 'width width)))))
+  ;; 设置窗口大小，仅仅在图形界面需要设置
+  (when (display-graphic-p)
+    (let ((top 0) ; 顶不留空
+          (left (/ (x-display-pixel-width) 10)) ; 左边空10%
+          (height
+           (round
+            (* 0.8 ; 窗体高度为0.8倍的显示高度
+               (/ (x-display-pixel-height) (frame-char-height))))))
+      (let ((width (round (* 2.5 height)))) ; 窗体宽度为2.5倍高度
+        (setq default-frame-alist nil)
+        (add-to-list 'default-frame-alist (cons 'top top))
+        (add-to-list 'default-frame-alist (cons 'left left))
+        (add-to-list 'default-frame-alist (cons 'height height))
+        (add-to-list 'default-frame-alist (cons 'width width)))))
 #+END_SRC
 
 ** 其他UI零散设置项
 
 #+begin_src emacs-lisp
-;; 禁用一些GUI特性
-(setq use-dialog-box nil)               ; 鼠标操作不使用对话框
-(setq inhibit-default-init t)           ; 不加载 `default' 库
-(setq inhibit-startup-screen t)         ; 不加载启动画面
-(setq inhibit-startup-message t)        ; 不加载启动消息
-(setq inhibit-startup-buffer-menu t)    ; 不显示缓冲区列表
+  ;; 禁用一些GUI特性
+  (setq use-dialog-box nil) ; 鼠标操作不使用对话框
+  (setq inhibit-default-init t) ; 不加载 `default' 库
+  (setq inhibit-startup-screen t) ; 不加载启动画面
+  (setq inhibit-startup-message t) ; 不加载启动消息
+  (setq inhibit-startup-buffer-menu t) ; 不显示缓冲区列表
 
-;; 草稿缓冲区默认文字设置
-(setq initial-scratch-message (concat ";; Happy hacking, "
-                                      (capitalize user-login-name) " - Emacs ♥ you!\n\n"))
+  ;; 草稿缓冲区默认文字设置
+  (setq initial-scratch-message
+        (concat
+         ";; Happy hacking, " (capitalize user-login-name) " - Emacs ♥ you!\n\n"))
 
-;; 设置缓冲区的文字方向为从左到右
-(setq bidi-paragraph-direction 'left-to-right)
-;; 禁止使用双向括号算法
-;; (setq bidi-inhibit-bpa t)
+  ;; 设置缓冲区的文字方向为从左到右
+  (setq bidi-paragraph-direction 'left-to-right)
+  ;; 禁止使用双向括号算法
+  ;; (setq bidi-inhibit-bpa t)
 
-;; 设置自动折行宽度为80个字符，默认值为70
-(setq-default fill-column 80)
+  ;; 设置自动折行宽度为80个字符，默认值为70
+  (setq-default fill-column 80)
 
-;; 设置大文件阈值为100MB，默认10MB
-(setq large-file-warning-threshold 100000000)
+  ;; 设置大文件阈值为100MB，默认10MB
+  (setq large-file-warning-threshold 100000000)
 
-;; 以16进制显示字节数
-(setq display-raw-bytes-as-hex t)
-;; 有输入时禁止 `fontification' 相关的函数钩子，能让滚动更顺滑
-(setq redisplay-skip-fontification-on-input t)
+  ;; 以16进制显示字节数
+  (setq display-raw-bytes-as-hex t)
+  ;; 有输入时禁止 `fontification' 相关的函数钩子，能让滚动更顺滑
+  (setq redisplay-skip-fontification-on-input t)
 
-;; 禁止响铃
-(setq ring-bell-function 'ignore)
+  ;; 禁止响铃
+  (setq ring-bell-function 'ignore)
 
-;; 禁止闪烁光标
-(blink-cursor-mode -1)
+  ;; 禁止闪烁光标
+  (blink-cursor-mode -1)
 
-;; 在光标处而非鼠标所在位置粘贴
-(setq mouse-yank-at-point t)
+  ;; 在光标处而非鼠标所在位置粘贴
+  (setq mouse-yank-at-point t)
 
-;; 拷贝粘贴设置
-(setq select-enable-primary nil)        ; 选择文字时不拷贝
-(setq select-enable-clipboard t)        ; 拷贝时使用剪贴板
+  ;; 拷贝粘贴设置
+  (setq select-enable-primary nil) ; 选择文字时不拷贝
+  (setq select-enable-clipboard t) ; 拷贝时使用剪贴板
 
-;; 鼠标滚动设置
-(setq scroll-step 2)
-(setq scroll-margin 2)
-(setq hscroll-step 2)
-(setq hscroll-margin 2)
-(setq scroll-conservatively 101)
-(setq scroll-up-aggressively 0.01)
-(setq scroll-down-aggressively 0.01)
-(setq scroll-preserve-screen-position 'always)
+  ;; 鼠标滚动设置
+  (setq scroll-step 2)
+  (setq scroll-margin 2)
+  (setq hscroll-step 2)
+  (setq hscroll-margin 2)
+  (setq scroll-conservatively 101)
+  (setq scroll-up-aggressively 0.01)
+  (setq scroll-down-aggressively 0.01)
+  (setq scroll-preserve-screen-position 'always)
 
-;; 对于高的行禁止自动垂直滚动
-(setq auto-window-vscroll nil)
+  ;; 对于高的行禁止自动垂直滚动
+  (setq auto-window-vscroll nil)
 
-;; 设置新分屏打开的位置的阈值
-(setq split-width-threshold (assoc-default 'width default-frame-alist))
-(setq split-height-threshold nil)
+  ;; 设置新分屏打开的位置的阈值
+  (setq split-width-threshold (assoc-default 'width default-frame-alist))
+  (setq split-height-threshold nil)
 
-;; TAB键设置，在Emacs里不使用TAB键，所有的TAB默认为4个空格
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
+  ;; TAB键设置，在Emacs里不使用TAB键，所有的TAB默认为4个空格
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 4)
 
-;; yes或no提示设置，通过下面这个函数设置当缓冲区名字匹配到预设的字符串时自动回答yes
-(setq original-y-or-n-p 'y-or-n-p)
-(defalias 'original-y-or-n-p (symbol-function 'y-or-n-p))
-(defun default-yes-sometimes (prompt)
-  "automatically say y when buffer name match following string"
-  (if (or
-	   (string-match "has a running process" prompt)
-	   (string-match "does not exist; create" prompt)
-	   (string-match "modified; kill anyway" prompt)
-	   (string-match "Delete buffer using" prompt)
-	   (string-match "Kill buffer of" prompt)
-	   (string-match "still connected.  Kill it?" prompt)
-	   (string-match "Shutdown the client's kernel" prompt)
-	   (string-match "kill them and exit anyway" prompt)
-	   (string-match "Revert buffer from file" prompt)
-	   (string-match "Kill Dired buffer of" prompt)
-	   (string-match "delete buffer using" prompt)
-       (string-match "Kill all pass entry" prompt)
-       (string-match "for all cursors" prompt)
-	   (string-match "Do you want edit the entry" prompt))
-	  t
-    (original-y-or-n-p prompt)))
-(defalias 'yes-or-no-p 'default-yes-sometimes)
-(defalias 'y-or-n-p 'default-yes-sometimes)
+  ;; yes或no提示设置，通过下面这个函数设置当缓冲区名字匹配到预设的字符串时自动回答yes
+  (setq original-y-or-n-p 'y-or-n-p)
+  (defalias 'original-y-or-n-p (symbol-function 'y-or-n-p))
+  (defun default-yes-sometimes (prompt)
+    "automatically say y when buffer name match following string"
+    (if (or (string-match "has a running process" prompt)
+            (string-match "does not exist; create" prompt)
+            (string-match "modified; kill anyway" prompt)
+            (string-match "Delete buffer using" prompt)
+            (string-match "Kill buffer of" prompt)
+            (string-match "still connected.  Kill it?" prompt)
+            (string-match "Shutdown the client's kernel" prompt)
+            (string-match "kill them and exit anyway" prompt)
+            (string-match "Revert buffer from file" prompt)
+            (string-match "Kill Dired buffer of" prompt)
+            (string-match "delete buffer using" prompt)
+            (string-match "Kill all pass entry" prompt)
+            (string-match "for all cursors" prompt)
+            (string-match "Do you want edit the entry" prompt))
+        t
+      (original-y-or-n-p prompt)))
+  (defalias 'yes-or-no-p 'default-yes-sometimes)
+  (defalias 'y-or-n-p 'default-yes-sometimes)
 
-;; 设置剪贴板历史长度300，默认为60
-(setq kill-ring-max 200)
+  ;; 设置剪贴板历史长度300，默认为60
+  (setq kill-ring-max 200)
 
-;; 在剪贴板里不存储重复内容
-(setq kill-do-not-save-duplicates t)
+  ;; 在剪贴板里不存储重复内容
+  (setq kill-do-not-save-duplicates t)
 
-;; 设置位置记录长度为6，默认为16
-;; 可以使用 `counsel-mark-ring' or `consult-mark' (C-x j) 来访问光标位置记录
-;; 使用 C-x C-SPC 执行 `pop-global-mark' 直接跳转到上一个全局位置处
-;; 使用 C-u C-SPC 跳转到本地位置处
-(setq mark-ring-max 6)
-(setq global-mark-ring-max 6)
+  ;; 设置位置记录长度为6，默认为16
+  ;; 可以使用 `counsel-mark-ring' or `consult-mark' (C-x j) 来访问光标位置记录
+  ;; 使用 C-x C-SPC 执行 `pop-global-mark' 直接跳转到上一个全局位置处
+  ;; 使用 C-u C-SPC 跳转到本地位置处
+  (setq mark-ring-max 6)
+  (setq global-mark-ring-max 6)
 
-;; 设置 emacs-lisp 的限制
-(setq max-lisp-eval-depth 10000)        ; 默认值为 800
-(setq max-specpdl-size 10000)           ; 默认值为 1600
+  ;; 设置 emacs-lisp 的限制
+  (setq max-lisp-eval-depth 10000) ; 默认值为 800
+  (setq max-specpdl-size 10000) ; 默认值为 1600
 
-;; 启用 `list-timers', `list-threads' 这两个命令
-(put 'list-timers 'disabled nil)
-(put 'list-threads 'disabled nil)
+  ;; 启用 `list-timers', `list-threads' 这两个命令
+  (put 'list-timers 'disabled nil)
+  (put 'list-threads 'disabled nil)
 
-;; 在命令行里支持鼠标
-(xterm-mouse-mode 1)
+  ;; 在命令行里支持鼠标
+  (xterm-mouse-mode 1)
 
-;; 在模式栏上显示当前光标的列号
-(column-number-mode t)
+  ;; 在模式栏上显示当前光标的列号
+  (column-number-mode t)
 #+end_src
 
 ** 编码设置
@@ -321,21 +349,21 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 统一使用 UTF-8 编码。
 
 #+begin_src emacs-lisp
-;; 配置所有的编码为UTF-8，参考：
-;; https://thraxys.wordpress.com/2016/01/13/utf-8-in-emacs-everywhere-forever/
-(setq locale-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-selection-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(set-language-environment 'utf-8)
-(set-clipboard-coding-system 'utf-8)
-(set-file-name-coding-system 'utf-8)
-(set-buffer-file-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
-(modify-coding-system-alist 'process "*" 'utf-8)
-(when (display-graphic-p)
-  (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
+  ;; 配置所有的编码为UTF-8，参考：
+  ;; https://thraxys.wordpress.com/2016/01/13/utf-8-in-emacs-everywhere-forever/
+  (setq locale-coding-system 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+  (set-selection-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-language-environment 'utf-8)
+  (set-clipboard-coding-system 'utf-8)
+  (set-file-name-coding-system 'utf-8)
+  (set-buffer-file-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+  (modify-coding-system-alist 'process "*" 'utf-8)
+  (when (display-graphic-p)
+    (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING)))
 #+end_src
 
 ** 模式栏设置
@@ -344,34 +372,34 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 [[https://github.com/seagle0128/doom-modeline][doom-modeline]] 是一个模式栏美化插件。
 
 #+begin_src emacs-lisp
-(use-package doom-modeline
-  :config (doom-modeline-mode)
-  :custom
-  (doom-modeline-irc nil)
-  (doom-modeline-mu4e nil)
-  (doom-modeline-gnus nil)
-  (doom-modeline-github nil)
-  (doom-modeline-buffer-file-name-style 'truncate-upto-root) ; : auto
-  (doom-modeline-persp-name nil)
-  (doom-modeline-unicode-fallback t)
-  (doom-modeline-enable-word-count nil))
+  (use-package
+   doom-modeline
+   :config (doom-modeline-mode)
+   :custom
+   (doom-modeline-irc nil)
+   (doom-modeline-mu4e nil)
+   (doom-modeline-gnus nil)
+   (doom-modeline-github nil)
+   (doom-modeline-buffer-file-name-style 'truncate-upto-root) ; : auto
+   (doom-modeline-persp-name nil)
+   (doom-modeline-unicode-fallback t)
+   (doom-modeline-enable-word-count nil))
 #+end_src
 
 *** minions插件
 [[https://github.com/tarsius/minions][minions]] 插件能让模式栏变得清爽，将次要模式隐藏起来。
 
 #+BEGIN_SRC emacs-lisp
-(use-package minions
-  :config (minions-mode))
+  (use-package minions :config (minions-mode))
 #+END_SRC
 
 ** init-ui.el 文件尾
 
 #+BEGIN_SRC emacs-lisp
 
-(provide 'init-ui)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; init-ui.el ends here
+  (provide 'init-ui)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init-ui.el ends here
 #+END_SRC
 
 * init-edit.el
@@ -382,11 +410,10 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 ** init-edit.el 文件头
 
 #+BEGIN_SRC emacs-lisp
-;;; init-edit.el --- Editing settings -*- lexical-binding: t -*-
-;;; Commentary:
+  ;;; init-edit.el --- Editing settings -*- lexical-binding: t -*-
+  ;;; Commentary:
 
-;;; Code:
-
+  ;;; Code:
 #+END_SRC
 
 ** Emacs备份设置
@@ -394,8 +421,8 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 不使用Emacs的自动备份设置。
 
 #+BEGIN_SRC emacs-lisp
-(setq make-backup-files nil)                                  ; 不自动备份
-(setq auto-save-default nil)                                  ; 不使用Emacs自带的自动保存
+  (setq make-backup-files nil) ; 不自动备份
+  (setq auto-save-default nil) ; 不使用Emacs自带的自动保存
 #+END_SRC
 
 ** 解除一些不常用的快捷键
@@ -403,13 +430,13 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 将一些不常用的快捷键解除，防止误操作。
 
 #+BEGIN_SRC emacs-lisp
-;; 解除不常用的快捷键定义
-(global-set-key (kbd "C-z") nil)
-(global-set-key (kbd "s-q") nil)
-(global-set-key (kbd "M-z") nil)
-(global-set-key (kbd "M-m") nil)
-(global-set-key (kbd "C-x C-z") nil)
-(global-set-key [mouse-2] nil)
+  ;; 解除不常用的快捷键定义
+  (global-set-key (kbd "C-z") nil)
+  (global-set-key (kbd "s-q") nil)
+  (global-set-key (kbd "M-z") nil)
+  (global-set-key (kbd "M-m") nil)
+  (global-set-key (kbd "C-x C-z") nil)
+  (global-set-key [mouse-2] nil)
 #+END_SRC
 
 ** 自动重载设置
@@ -417,16 +444,17 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 当我们的文件发生了改变后，我们希望Emacs里打开的永远是最新的文件，这个时候，我们需要对自动重载进行设置，让我们的Emacs在文件发生改变的时候自动重载文件。
 
 #+BEGIN_SRC emacs-lisp
-(use-package autorevert
-  :ensure nil
-  :config (global-auto-revert-mode)
-  :custom
-  (auto-revert-interval 10)
-  (auto-revert-avoid-polling t)
-  (auto-revert-verbose nil)
-  (auto-revert-remote-files t)
-  (auto-revert-check-vc-info t)
-  (global-auto-revert-non-file-buffers t))
+  (use-package
+   autorevert
+   :ensure nil
+   :config (global-auto-revert-mode)
+   :custom
+   (auto-revert-interval 10)
+   (auto-revert-avoid-polling t)
+   (auto-revert-verbose nil)
+   (auto-revert-remote-files t)
+   (auto-revert-check-vc-info t)
+   (global-auto-revert-non-file-buffers t))
 #+END_SRC
 
 ** 🌈彩虹括号匹配
@@ -434,47 +462,43 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 [[https://github.com/Fanael/rainbow-delimiters][rainbow-delimiters]] 插件将多彩显示括号等分隔符。
 
 #+begin_src emacs-lisp
-  (use-package rainbow-delimiters
-    :ensure t
-    :hook (prog-mode . rainbow-delimiters-mode))
+  (use-package
+   rainbow-delimiters
+   :ensure t
+   :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
 
 ** savehist 保存 ~minibuffer~ 历史记录
 
 #+BEGIN_SRC emacs-lisp
-  (use-package savehist
-    :ensure nil
-    :init
-    (savehist-mode))
+  (use-package savehist :ensure nil :init (savehist-mode))
 #+END_SRC
 
 ** ~save-place~ 记住关闭文件是光标位置
 #+begin_src emacs-lisp
   ;; 自动记住每个文件的最后一次访问的光标位置
-  (use-package saveplace
-    :ensure nil
-    :init (save-place-mode))
+  (use-package saveplace :ensure nil :init (save-place-mode))
 #+end_src
 
 ** ~recentf~ 记住最近打开文件的历史记录
 
 #+begin_src emacs-lisp
-  (use-package recentf
-    :ensure nil
-    :init (recentf-mode)
-    :custom
-    (recentf-max-saved-items 300))
+  (use-package
+   recentf
+   :ensure nil
+   :init (recentf-mode)
+   :custom (recentf-max-saved-items 300))
 #+end_src
 
 ** ~undo-tree~ 增强 ~undo~
 
 #+begin_src emacs-lisp
-  (use-package undo-tree
-    :init (global-undo-tree-mode)
-    :config
-    ;; don't save undo history to local files
-    (setq undo-tree-auto-save-history nil)
-    )
+  (use-package
+   undo-tree
+   :init (global-undo-tree-mode)
+   :config
+   ;; don't save undo history to local files
+   (setq undo-tree-auto-save-history nil))
 #+end_src
 
 ** ~curx~
@@ -482,29 +506,31 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 ~curx~ 提供了一系列的增强，如移动增强、删除增强等优化功能。
 
 #+begin_src emacs-lisp
-  (use-package crux
-    :bind (("C-a" . crux-move-beginning-of-line)
-           ("C-x 4 t" . crux-transpose-windows)
-           ("C-x K" . crux-kill-other-buffers)
-           ("C-k" . crux-smart-kill-line)
-           ("C-c r" . crux-rename-file-and-buffer)
-           ("C-x DEL" . crux-kill-line-backwards))
-    :config
-    (crux-with-region-or-buffer indent-region)
-    (crux-with-region-or-buffer untabify)
-    (crux-with-region-or-point-to-eol kill-ring-save)
-    (defalias 'rename-file-and-buffer #'crux-rename-file-and-buffer))
+  (use-package
+   crux
+   :bind
+   (("C-a" . crux-move-beginning-of-line)
+    ("C-x 4 t" . crux-transpose-windows)
+    ("C-x K" . crux-kill-other-buffers)
+    ("C-k" . crux-smart-kill-line)
+    ("C-c r" . crux-rename-file-and-buffer)
+    ("C-x DEL" . crux-kill-line-backwards))
+   :config
+   (crux-with-region-or-buffer indent-region)
+   (crux-with-region-or-buffer untabify)
+   (crux-with-region-or-point-to-eol kill-ring-save)
+   (defalias 'rename-file-and-buffer #'crux-rename-file-and-buffer))
 #+end_src
 
 ** init-edit.el 文件尾
 
 #+BEGIN_SRC emacs-lisp
-;; (message "init-base configuration: %.2fs"
-;;          (float-time (time-subtract (current-time) my/init-base-start-time)))
+  ;; (message "init-base configuration: %.2fs"
+  ;;          (float-time (time-subtract (current-time) my/init-base-start-time)))
 
-(provide 'init-edit)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; init-edit.el ends here
+  (provide 'init-edit)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init-edit.el ends here
 #+END_SRC
 
 * init-org.el
@@ -515,286 +541,278 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 ** init-org.el 文件头
 
 #+BEGIN_SRC emacs-lisp
-;;; init-org.el --- Org mode settings -*- lexical-binding: t -*-
-;;; Commentary:
+  ;;; init-org.el --- Org mode settings -*- lexical-binding: t -*-
+  ;;; Commentary:
 
-;;; Code:
-
+  ;;; Code:
 #+END_SRC
 
 ** org 配置
 
 #+begin_src emacs-lisp
-  (use-package org
-    :ensure nil
-    :mode ("\\.org\\'" . org-mode)
-    :hook ((org-mode . visual-line-mode)
-         (org-mode . my/org-prettify-symbols))
-    :commands (org-find-exact-headline-in-buffer org-set-tags)
-    :custom-face
-    ;; 设置Org mode标题以及每级标题行的大小
-    (org-document-title ((t (:height 1.75 :weight bold))))
-    (org-level-1 ((t (:height 1.2 :weight bold))))
-    (org-level-2 ((t (:height 1.15 :weight bold))))
-    (org-level-3 ((t (:height 1.1 :weight bold))))
-    (org-level-4 ((t (:height 1.05 :weight bold))))
-    (org-level-5 ((t (:height 1.0 :weight bold))))
-    (org-level-6 ((t (:height 1.0 :weight bold))))
-    (org-level-7 ((t (:height 1.0 :weight bold))))
-    (org-level-8 ((t (:height 1.0 :weight bold))))
-    (org-level-9 ((t (:height 1.0 :weight bold))))
-    ;; 设置代码块用上下边线包裹
-    (org-block-begin-line ((t (:underline t :background unspecified))))
-    (org-block-end-line ((t (:overline t :underline nil :background unspecified))))
-    :config
-    ;; ================================
-    ;; 在org mode里美化字符串
-    ;; ================================
-    (defun my/org-prettify-symbols ()
-      (setq prettify-symbols-alist
-          (mapcan (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
-                  '(
-                    ("[ ]"              . 9744)         ; ☐
-                    ("[X]"              . 9745)         ; ☑
-                    ("[-]"              . 8863)         ; ⊟
-                    ("#+begin_src"      . 9998)         ; ✎
-                    ("#+end_src"        . 9998)         ; ✎
-                    ("#+begin_example"  . 129083)       ; 🠻
-                    ("#+end_example"    . 129081)       ; 🠹
-                    ("#+results:"       . 9776)         ; ☰
-                    ("#+attr_latex:"    . "🄛")
-                    ("#+attr_html:"     . "🄗")
-                    ("#+attr_org:"      . "🄞")
-                    ("#+name:"          . "🄝")         ; 127261
-                    ("#+caption:"       . "🄒")         ; 127250
-                    ("#+date:"          . "📅")         ; 128197
-                    ("#+author:"        . "💁")         ; 128100
-                    ("#+setupfile:"     . 128221)       ; 📝
-                    ("#+email:"         . 128231)       ; 📧
-                    ("#+startup:"       . 10034)        ; ✲
-                    ("#+options:"       . 9965)         ; ⛭
-                    ("#+title:"         . 10162)        ; ➲
-                    ("#+subtitle:"      . 11146)        ; ⮊
-                    ("#+downloaded:"    . 8650)         ; ⇊
-                    ("#+language:"      . 128441)       ; 🖹
-                    ("#+begin_quote"    . 187)          ; »
-                    ("#+end_quote"      . 171)          ; «
-                    ("#+begin_results"  . 8943)         ; ⋯
-                    ("#+end_results"    . 8943)         ; ⋯
-                    )))
-      (setq prettify-symbols-unprettify-at-point t)
-      (prettify-symbols-mode 1))
+  (use-package
+   org
+   :ensure nil
+   :mode ("\\.org\\'" . org-mode)
+   :hook ((org-mode . visual-line-mode) (org-mode . my/org-prettify-symbols))
+   :commands (org-find-exact-headline-in-buffer org-set-tags)
+   :custom-face
+   ;; 设置Org mode标题以及每级标题行的大小
+   (org-document-title ((t (:height 1.75 :weight bold))))
+   (org-level-1 ((t (:height 1.2 :weight bold))))
+   (org-level-2 ((t (:height 1.15 :weight bold))))
+   (org-level-3 ((t (:height 1.1 :weight bold))))
+   (org-level-4 ((t (:height 1.05 :weight bold))))
+   (org-level-5 ((t (:height 1.0 :weight bold))))
+   (org-level-6 ((t (:height 1.0 :weight bold))))
+   (org-level-7 ((t (:height 1.0 :weight bold))))
+   (org-level-8 ((t (:height 1.0 :weight bold))))
+   (org-level-9 ((t (:height 1.0 :weight bold))))
+   ;; 设置代码块用上下边线包裹
+   (org-block-begin-line ((t (:underline t :background unspecified))))
+   (org-block-end-line ((t (:overline t :underline nil :background unspecified))))
+   :config
+   ;; ================================
+   ;; 在org mode里美化字符串
+   ;; ================================
+   (defun my/org-prettify-symbols ()
+     (setq prettify-symbols-alist
+           (mapcan
+            (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
+            '(("[ ]" . 9744) ; ☐
+              ("[X]" . 9745) ; ☑
+              ("[-]" . 8863) ; ⊟
+              ("#+begin_src" . 9998) ; ✎
+              ("#+end_src" . 9998) ; ✎
+              ("#+begin_example" . 129083) ; 🠻
+              ("#+end_example" . 129081) ; 🠹
+              ("#+results:" . 9776) ; ☰
+              ("#+attr_latex:" . "🄛") ("#+attr_html:" . "🄗") ("#+attr_org:" . "🄞")
+              ("#+name:" . "🄝") ; 127261
+              ("#+caption:" . "🄒") ; 127250
+              ("#+date:" . "📅") ; 128197
+              ("#+author:" . "💁") ; 128100
+              ("#+setupfile:" . 128221) ; 📝
+              ("#+email:" . 128231) ; 📧
+              ("#+startup:" . 10034) ; ✲
+              ("#+options:" . 9965) ; ⛭
+              ("#+title:" . 10162) ; ➲
+              ("#+subtitle:" . 11146) ; ⮊
+              ("#+downloaded:" . 8650) ; ⇊
+              ("#+language:" . 128441) ; 🖹
+              ("#+begin_quote" . 187) ; »
+              ("#+end_quote" . 171) ; «
+              ("#+begin_results" . 8943) ; ⋯
+              ("#+end_results" . 8943) ; ⋯
+              )))
+     (setq prettify-symbols-unprettify-at-point t)
+     (prettify-symbols-mode 1))
 
-    ;; 提升latex预览的图片清晰度
-    (plist-put org-format-latex-options :scale 1.8)
+   ;; 提升latex预览的图片清晰度
+   (plist-put org-format-latex-options :scale 1.8)
 
-    ;; 设置标题行之间总是有空格；列表之间根据情况自动加空格
-    (setq org-blank-before-new-entry '((heading . t)
-                                     (plain-list-item . auto)
-                                     ))
-    :custom
-    ;; 启用一些子模块
-    (org-modules '(ol-bibtex ol-gnus ol-info ol-eww org-habit org-protocol))
-    ;; 在按M-RET时，是否根据光标所在的位置分行，这里设置为是
-    ;; (org-M-RET-may-split-line '((default . nil)))
-    ;; 一些Org mode自带的美化设置
-    ;; 标题行美化
-    (org-fontify-whole-heading-line t)
-    ;; 设置标题行折叠符号
-    (org-ellipsis " ▾")
-    ;; 在活动区域内的所有标题栏执行某些命令
-    (org-loop-over-headlines-in-active-region t)
-    ;; TODO标签美化
-    (org-fontify-todo-headline t)
-    ;; DONE标签美化
-    (org-fontify-done-headline t)
-    ;; 引用块美化
-    (org-fontify-quote-and-verse-blocks t)
-    ;; 隐藏宏标记
-    (org-hide-macro-markers t)
-    ;; 隐藏强调标签
-    (org-hide-emphasis-markers t)
-    ;; 高亮latex语法
-    (org-highlight-latex-and-related '(native script entities))
-    ;; 以UTF-8显示
-    (org-pretty-entities t)
-    ;; 是否隐藏标题栏的前置星号，这里我们通过org-modern来隐藏
-    ;; (org-hide-leading-stars t)
-    ;; 当启用缩进模式时自动隐藏前置星号
-    (org-indent-mode-turns-on-hiding-stars t)
-    ;; 自动启用缩进
-    (org-startup-indented nil)
-    ;; 根据标题栏自动缩进文本
-    (org-adapt-indentation nil)
-    ;; 自动显示图片
-    (org-startup-with-inline-images t)
-    ;; 默认以Overview的模式展示标题行
-    (org-startup-folded 'overview)
-    ;; 允许字母列表
-    (org-list-allow-alphabetical t)
-    ;; 列表的下一级设置
-    (org-list-demote-modify-bullet '(
-								   ("-"  . "+")
-                                   ("+"  . "1.")
-								   ("1." . "a.")
-								   ))
-    ;; 编辑时检查是否在折叠的不可见区域
-    (org-fold-catch-invisible-edits 'smart)
-    ;; 在当前位置插入新标题行还是在当前标题行后插入，这里设置为当前位置
-    (org-insert-heading-respect-content nil)
-    ;; 设置图片的最大宽度，如果有imagemagick支持将会改变图片实际宽度
-    ;; 四种设置方法：(1080), 1080, t, nil
-    (org-image-actual-width nil)
-    ;; imenu的最大深度，默认为2
-    (org-imenu-depth 4)
-    ;; 回车要不要触发链接，这里设置不触发
-    (org-return-follows-link nil)
-    ;; 上标^下标_是否需要特殊字符包裹，这里设置需要用大括号包裹
-    (org-use-sub-superscripts '{})
-    ;; 复制粘贴标题行的时候删除id
-    (org-clone-delete-id t)
-    ;; 粘贴时调整标题行的级别
-    (org-yank-adjusted-subtrees t)
+   ;; 设置标题行之间总是有空格；列表之间根据情况自动加空格
+   (setq org-blank-before-new-entry '((heading . t) (plain-list-item . auto)))
+   :custom
+   ;; 启用一些子模块
+   (org-modules '(ol-bibtex ol-gnus ol-info ol-eww org-habit org-protocol))
+   ;; 在按M-RET时，是否根据光标所在的位置分行，这里设置为是
+   ;; (org-M-RET-may-split-line '((default . nil)))
+   ;; 一些Org mode自带的美化设置
+   ;; 标题行美化
+   (org-fontify-whole-heading-line t)
+   ;; 设置标题行折叠符号
+   (org-ellipsis " ▾")
+   ;; 在活动区域内的所有标题栏执行某些命令
+   (org-loop-over-headlines-in-active-region t)
+   ;; TODO标签美化
+   (org-fontify-todo-headline t)
+   ;; DONE标签美化
+   (org-fontify-done-headline t)
+   ;; 引用块美化
+   (org-fontify-quote-and-verse-blocks t)
+   ;; 隐藏宏标记
+   (org-hide-macro-markers t)
+   ;; 隐藏强调标签
+   (org-hide-emphasis-markers t)
+   ;; 高亮latex语法
+   (org-highlight-latex-and-related '(native script entities))
+   ;; 以UTF-8显示
+   (org-pretty-entities t)
+   ;; 是否隐藏标题栏的前置星号，这里我们通过org-modern来隐藏
+   ;; (org-hide-leading-stars t)
+   ;; 当启用缩进模式时自动隐藏前置星号
+   (org-indent-mode-turns-on-hiding-stars t)
+   ;; 自动启用缩进
+   (org-startup-indented nil)
+   ;; 根据标题栏自动缩进文本
+   (org-adapt-indentation nil)
+   ;; 自动显示图片
+   (org-startup-with-inline-images t)
+   ;; 默认以Overview的模式展示标题行
+   (org-startup-folded 'overview)
+   ;; 允许字母列表
+   (org-list-allow-alphabetical t)
+   ;; 列表的下一级设置
+   (org-list-demote-modify-bullet '(("-" . "+") ("+" . "1.") ("1." . "a.")))
+   ;; 编辑时检查是否在折叠的不可见区域
+   (org-fold-catch-invisible-edits 'smart)
+   ;; 在当前位置插入新标题行还是在当前标题行后插入，这里设置为当前位置
+   (org-insert-heading-respect-content nil)
+   ;; 设置图片的最大宽度，如果有imagemagick支持将会改变图片实际宽度
+   ;; 四种设置方法：(1080), 1080, t, nil
+   (org-image-actual-width nil)
+   ;; imenu的最大深度，默认为2
+   (org-imenu-depth 4)
+   ;; 回车要不要触发链接，这里设置不触发
+   (org-return-follows-link nil)
+   ;; 上标^下标_是否需要特殊字符包裹，这里设置需要用大括号包裹
+   (org-use-sub-superscripts '{})
+   ;; 复制粘贴标题行的时候删除id
+   (org-clone-delete-id t)
+   ;; 粘贴时调整标题行的级别
+   (org-yank-adjusted-subtrees t)
 
-    ;; TOOD的关键词设置，可以设置不同的组
-    (org-todo-keywords '((sequence "TODO(t)" "HOLD(h!)" "WIP(i!)" "WAIT(w!)" "|" "DONE(d!)" "CANCELLED(c@/!)")
-					   (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f!)")))
-    ;; TODO关键词的样式设置
-    (org-todo-keyword-faces '(("TODO"       :foreground "#7c7c75" :weight bold)
-							("HOLD"       :foreground "#feb24c" :weight bold)
-							("WIP"        :foreground "#0098dd" :weight bold)
-							("WAIT"       :foreground "#9f7efe" :weight bold)
-							("DONE"       :foreground "#50a14f" :weight bold)
-							("CANCELLED"  :foreground "#ff6480" :weight bold)
-							("REPORT"     :foreground "magenta" :weight bold)
-							("BUG"        :foreground "red"     :weight bold)
-							("KNOWNCAUSE" :foreground "yellow"  :weight bold)
-							("FIXED"      :foreground "green"   :weight bold)))
-    ;; 当标题行状态变化时标签同步发生的变化
-    ;; Moving a task to CANCELLED adds a CANCELLED tag
-    ;; Moving a task to WAIT adds a WAIT tag
-    ;; Moving a task to HOLD adds WAIT and HOLD tags
-    ;; Moving a task to a done state removes WAIT and HOLD tags
-    ;; Moving a task to TODO removes WAIT, CANCELLED, and HOLD tags
-    ;; Moving a task to DONE removes WAIT, CANCELLED, and HOLD tags
-    (org-todo-state-tags-triggers
-     (quote (("CANCELLED" ("CANCELLED" . t))
-		   ("WAIT" ("WAIT" . t))
-		   ("HOLD" ("WAIT") ("HOLD" . t))
-		   (done ("WAIT") ("HOLD"))
-		   ("TODO" ("WAIT") ("CANCELLED") ("HOLD"))
-		   ("DONE" ("WAIT") ("CANCELLED") ("HOLD")))))
-    ;; 使用专家模式选择标题栏状态
-    (org-use-fast-todo-selection 'expert)
-    ;; 父子标题栏状态有依赖
-    (org-enforce-todo-dependencies t)
-    ;; 标题栏和任务复选框有依赖
-    (org-enforce-todo-checkbox-dependencies t)
-    ;; 优先级样式设置
-    (org-priority-faces '((?A :foreground "red")
-						(?B :foreground "orange")
-						(?C :foreground "yellow")))
-    ;; 标题行全局属性设置
-    (org-global-properties '(("EFFORT_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 7:00 8:00")
-						   ("APPT_WARNTIME_ALL" . "0 5 10 15 20 25 30 45 60")
-						   ("RISK_ALL" . "Low Medium High")
-						   ("STYLE_ALL" . "habit")))
-    ;; Org columns的默认格式
-    (org-columns-default-format "%25ITEM %TODO %SCHEDULED %DEADLINE %3PRIORITY %TAGS %CLOCKSUM %EFFORT{:}")
-    ;; 当状态从DONE改成其他状态时，移除 CLOSED: [timestamp]
-    (org-closed-keep-when-no-todo t)
-    ;; DONE时加上时间戳
-    (org-log-done 'time)
-    ;; 重复执行时加上时间戳
-    (org-log-repeat 'time)
-    ;; Deadline修改时加上一条记录
-    (org-log-redeadline 'note)
-    ;; Schedule修改时加上一条记录
-    (org-log-reschedule 'note)
-    ;; 以抽屉的方式记录
-    (org-log-into-drawer t)
-    ;; 紧接着标题行或者计划/截止时间戳后加上记录抽屉
-    (org-log-state-notes-insert-after-drawers nil)
+   ;; TOOD的关键词设置，可以设置不同的组
+   (org-todo-keywords
+    '((sequence
+       "TODO(t)" "HOLD(h!)" "WIP(i!)" "WAIT(w!)" "|" "DONE(d!)" "CANCELLED(c@/!)")
+      (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f!)")))
+   ;; TODO关键词的样式设置
+   (org-todo-keyword-faces
+    '(("TODO" :foreground "#7c7c75" :weight bold)
+      ("HOLD" :foreground "#feb24c" :weight bold)
+      ("WIP" :foreground "#0098dd" :weight bold)
+      ("WAIT" :foreground "#9f7efe" :weight bold)
+      ("DONE" :foreground "#50a14f" :weight bold)
+      ("CANCELLED" :foreground "#ff6480" :weight bold)
+      ("REPORT" :foreground "magenta" :weight bold)
+      ("BUG" :foreground "red" :weight bold)
+      ("KNOWNCAUSE" :foreground "yellow" :weight bold)
+      ("FIXED" :foreground "green" :weight bold)))
+   ;; 当标题行状态变化时标签同步发生的变化
+   ;; Moving a task to CANCELLED adds a CANCELLED tag
+   ;; Moving a task to WAIT adds a WAIT tag
+   ;; Moving a task to HOLD adds WAIT and HOLD tags
+   ;; Moving a task to a done state removes WAIT and HOLD tags
+   ;; Moving a task to TODO removes WAIT, CANCELLED, and HOLD tags
+   ;; Moving a task to DONE removes WAIT, CANCELLED, and HOLD tags
+   (org-todo-state-tags-triggers
+    (quote (("CANCELLED" ("CANCELLED" . t))
+            ("WAIT" ("WAIT" . t))
+            ("HOLD" ("WAIT") ("HOLD" . t))
+            (done ("WAIT") ("HOLD"))
+            ("TODO" ("WAIT") ("CANCELLED") ("HOLD"))
+            ("DONE" ("WAIT") ("CANCELLED") ("HOLD")))))
+   ;; 使用专家模式选择标题栏状态
+   (org-use-fast-todo-selection 'expert)
+   ;; 父子标题栏状态有依赖
+   (org-enforce-todo-dependencies t)
+   ;; 标题栏和任务复选框有依赖
+   (org-enforce-todo-checkbox-dependencies t)
+   ;; 优先级样式设置
+   (org-priority-faces
+    '((?A :foreground "red") (?B :foreground "orange") (?C :foreground "yellow")))
+   ;; 标题行全局属性设置
+   (org-global-properties
+    '(("EFFORT_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 7:00 8:00")
+      ("APPT_WARNTIME_ALL" . "0 5 10 15 20 25 30 45 60")
+      ("RISK_ALL" . "Low Medium High")
+      ("STYLE_ALL" . "habit")))
+   ;; Org columns的默认格式
+   (org-columns-default-format
+    "%25ITEM %TODO %SCHEDULED %DEADLINE %3PRIORITY %TAGS %CLOCKSUM %EFFORT{:}")
+   ;; 当状态从DONE改成其他状态时，移除 CLOSED: [timestamp]
+   (org-closed-keep-when-no-todo t)
+   ;; DONE时加上时间戳
+   (org-log-done 'time)
+   ;; 重复执行时加上时间戳
+   (org-log-repeat 'time)
+   ;; Deadline修改时加上一条记录
+   (org-log-redeadline 'note)
+   ;; Schedule修改时加上一条记录
+   (org-log-reschedule 'note)
+   ;; 以抽屉的方式记录
+   (org-log-into-drawer t)
+   ;; 紧接着标题行或者计划/截止时间戳后加上记录抽屉
+   (org-log-state-notes-insert-after-drawers nil)
 
-    ;; refile使用缓存
-    (org-refile-use-cache t)
-    ;; refile的目的地，这里设置的是agenda文件的所有标题
-    (org-refile-targets '((org-agenda-files . (:maxlevel . 9))))
-    ;; 将文件名加入到路径
-    (org-refile-use-outline-path 'file)
-    ;; 是否按步骤refile
-    (org-outline-path-complete-in-steps nil)
-    ;; 允许创建新的标题行，但需要确认
-    (org-refile-allow-creating-parent-nodes 'confirm)
+   ;; refile使用缓存
+   (org-refile-use-cache t)
+   ;; refile的目的地，这里设置的是agenda文件的所有标题
+   (org-refile-targets '((org-agenda-files . (:maxlevel . 9))))
+   ;; 将文件名加入到路径
+   (org-refile-use-outline-path 'file)
+   ;; 是否按步骤refile
+   (org-outline-path-complete-in-steps nil)
+   ;; 允许创建新的标题行，但需要确认
+   (org-refile-allow-creating-parent-nodes 'confirm)
 
-    ;; 设置标签的默认位置，默认是第77列右对齐
-    ;; (org-tags-column -77)
-    ;; 自动对齐标签
-    (org-auto-align-tags t)
-    ;; 标签不继承
-    (org-use-tag-inheritance nil)
-    ;; 在日程视图的标签不继承
-    (org-agenda-use-tag-inheritance nil)
-    ;; 标签快速选择
-    (org-use-fast-tag-selection t)
-    ;; 标签选择不需要回车确认
-    (org-fast-tag-selection-single-key t)
-    ;; 定义了有序属性的标题行也加上 OREDERD 标签
-    (org-track-ordered-property-with-tag t)
-    ;; 始终存在的的标签
-    (org-tag-persistent-alist '(("read"     . ?r)
-							  ("mail"     . ?m)
-							  ("emacs"    . ?e)
-							  ("study"    . ?s)
-							  ("work"     . ?w)))
-    ;; 预定义好的标签
-    (org-tag-alist '((:startgroup)
-				   ("crypt"    . ?c)
-				   ("linux"    . ?l)
-				   ("apple"    . ?a)
-				   ("noexport" . ?n)
-				   ("ignore"   . ?i)
-				   ("TOC"      . ?t)
-				   (:endgroup)))
-  )
+   ;; 设置标签的默认位置，默认是第77列右对齐
+   ;; (org-tags-column -77)
+   ;; 自动对齐标签
+   (org-auto-align-tags t)
+   ;; 标签不继承
+   (org-use-tag-inheritance nil)
+   ;; 在日程视图的标签不继承
+   (org-agenda-use-tag-inheritance nil)
+   ;; 标签快速选择
+   (org-use-fast-tag-selection t)
+   ;; 标签选择不需要回车确认
+   (org-fast-tag-selection-single-key t)
+   ;; 定义了有序属性的标题行也加上 OREDERD 标签
+   (org-track-ordered-property-with-tag t)
+   ;; 始终存在的的标签
+   (org-tag-persistent-alist
+    '(("read" . ?r) ("mail" . ?m) ("emacs" . ?e) ("study" . ?s) ("work" . ?w)))
+   ;; 预定义好的标签
+   (org-tag-alist
+    '((:startgroup)
+      ("crypt" . ?c)
+      ("linux" . ?l)
+      ("apple" . ?a)
+      ("noexport" . ?n)
+      ("ignore" . ?i)
+      ("TOC" . ?t)
+      (:endgroup))))
 #+end_src
 
 ** org-modern 美化 org
 
 #+begin_src emacs-lisp
-  (use-package org-modern
-    :ensure t
-    :hook (after-init . (lambda ()
-                          (setq org-modern-hide-stars 'leading)
-                          (global-org-modern-mode t)))
-    :config
-    ;; 标题行型号字符
-    (setq org-modern-star ["◉" "○" "✸" "✳" "◈" "◇" "✿" "❀" "✜"])
-    ;; 额外的行间距，0.1表示10%，1表示1px
-    (setq-default line-spacing 0.1)
-    ;; tag边框宽度，还可以设置为 `auto' 即自动计算
-    (setq org-modern-label-border 1)
-    ;; 设置表格竖线宽度，默认为3
-    (setq org-modern-table-vertical 2)
-    ;; 设置表格横线为0，默认为0.1
-    (setq org-modern-table-horizontal 0)
-    ;; 复选框美化
-    (setq org-modern-checkbox
-          '((?X . #("▢✓" 0 2 (composition ((2)))))
-            (?- . #("▢–" 0 2 (composition ((2)))))
-            (?\s . #("▢" 0 1 (composition ((1)))))))
-    ;; 列表符号美化
-    (setq org-modern-list
-          '((?- . "•")
-            (?+ . "◦")
-            (?* . "▹")))
-    ;; 代码块左边加上一条竖边线（需要Org mode顶头，如果启用了 `visual-fill-column-mode' 会很难看）
-    (setq org-modern-block-fringe t)
-    ;; 代码块类型美化，我们使用了 `prettify-symbols-mode'
-    (setq org-modern-block-name nil)
-    ;; #+关键字美化，我们使用了 `prettify-symbols-mode'
-    (setq org-modern-keyword nil)
-    )
+  (use-package
+   org-modern
+   :ensure t
+   :hook
+   (after-init
+    .
+    (lambda ()
+      (setq org-modern-hide-stars 'leading)
+      (global-org-modern-mode t)))
+   :config
+   ;; 标题行型号字符
+   (setq org-modern-star ["◉" "○" "✸" "✳" "◈" "◇" "✿" "❀" "✜"])
+   ;; 额外的行间距，0.1表示10%，1表示1px
+   (setq-default line-spacing 0.1)
+   ;; tag边框宽度，还可以设置为 `auto' 即自动计算
+   (setq org-modern-label-border 1)
+   ;; 设置表格竖线宽度，默认为3
+   (setq org-modern-table-vertical 2)
+   ;; 设置表格横线为0，默认为0.1
+   (setq org-modern-table-horizontal 0)
+   ;; 复选框美化
+   (setq org-modern-checkbox
+         '((?X . #("▢✓" 0 2 (composition ((2)))))
+           (?- . #("▢–" 0 2 (composition ((2)))))
+           (?\s . #("▢" 0 1 (composition ((1)))))))
+   ;; 列表符号美化
+   (setq org-modern-list '((?- . "•") (?+ . "◦") (?* . "▹")))
+   ;; 代码块左边加上一条竖边线（需要Org mode顶头，如果启用了 `visual-fill-column-mode' 会很难看）
+   (setq org-modern-block-fringe t)
+   ;; 代码块类型美化，我们使用了 `prettify-symbols-mode'
+   (setq org-modern-block-name nil)
+   ;; #+关键字美化，我们使用了 `prettify-symbols-mode'
+   (setq org-modern-keyword nil))
 #+end_src
 
 ** org-appear 自动展开强调链接
