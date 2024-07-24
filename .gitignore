@@ -25,3 +25,5 @@ blink-search.db
 nov-places
 *.el
 /elisp-autofmt-cache/
+/netease-cloud-music/
+/request/
