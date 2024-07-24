@@ -1322,11 +1322,35 @@ Emacs的补全设置。
 高扩展，配置丰富的翻译框架
 
 #+begin_src emacs-lisp
-  (use-package go-translate
-    :defer t
-    :custom (setq gt-langs '(en zh))
-    (setq gt-default-translator (gt-translator :engines (gt-youdao-dict-engine)))
-  )
+  (use-package
+   go-translate
+   :defer t
+   :custom (gt-langs '(en zh) "set the lang translat")
+   (gt-default-translator
+    (gt-translator
+     :engines
+     (list
+      (gt-youdao-dict-engine) (gt-google-rpc-engine :if 'not-word :cache nil))
+     :render (gt-buffer-render))
+    "set translator"))
+#+end_src
+
+** fanyi 另一款翻译插件
+
+#+begin_src emacs-lisp
+  (use-package
+   fanyi
+   :defer t
+   :custom
+   (fanyi-providers
+    '( ;; 海词
+      fanyi-haici-provider
+      ;; 有道同义词词典
+      fanyi-youdao-thesaurus-provider
+      ;; Etymonline
+      fanyi-etymon-provider
+      ;; Longman
+      fanyi-longman-provider)))
 #+end_src
 
 ** ch-en-space
