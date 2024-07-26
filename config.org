@@ -15,6 +15,12 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   (setq gc-cons-threshold most-positive-fixnum)
   (setq gc-cons-percentage 0.6)
 
+  ;; 不要在 gc 期间压缩字体
+  (setq inhibit-compacting-font-caches t)
+
+  ;; 显示真实的路径，而不是符号链接
+  (setq find-file-visit-truename t)
+
   ;; 禁止启动的首页展示
   (setq package-enable-at-startup nil)
 
@@ -376,14 +382,14 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
    doom-modeline
    :config (doom-modeline-mode)
    :custom
+   (doom-modeline-hub t)
+   (doom-modeline-buffer-file-name-style 'auto)
+   (doom-modeline-total-line-number t)
    (doom-modeline-irc nil)
    (doom-modeline-mu4e nil)
    (doom-modeline-gnus nil)
    (doom-modeline-github nil)
-   (doom-modeline-buffer-file-name-style 'truncate-upto-root) ; : auto
-   (doom-modeline-persp-name nil)
-   (doom-modeline-unicode-fallback t)
-   (doom-modeline-enable-word-count nil))
+   (doom-modeline-enable-word-count t))
 #+end_src
 
 *** minions插件
@@ -415,6 +421,18 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 
   ;;; Code:
 #+END_SRC
+
+** 行号设置
+
+在 prog-mode 下开启行号，但是在 org-mode 下不开启行号
+
+#+begin_src emacs-lisp
+  ;; 在 prog-mode 下启用行号显示
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+
+  ;; 在 org-mode 下禁用行号显示
+  (add-hook 'org-mode-hook (lambda () (display-line-numbers-mode 0)))
+#+end_src
 
 ** Emacs备份设置
 
@@ -1125,21 +1143,7 @@ Emacs的补全设置。
 [[https://github.com/minad/corfu][corfu 是一个补全框架，相较于 ~company~ 更加现代化]]
 
 #+BEGIN_SRC emacs-lisp
-  (use-package
-   corfu
-   :defer t
-   :init (global-corfu-mode)
-   ;:custom
-   ;(corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-   ;(corfu-auto t)                 ;; Enable auto completion
-   ;(corfu-separator ?\s)          ;; Orderless field separator
-   ;(corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
-   ;(corfu-quit-no-match nil)      ;; Never quit, even if there is no match
-   ;(corfu-preview-current nil)    ;; Disable current candidate preview
-   ;(corfu-preselect 'prompt)      ;; Preselect the prompt
-   ;(corfu-on-exact-match nil)     ;; Configure handling of exact matches
-   ;(corfu-scroll-margin 5)        ;; Use scroll margin
-   )
+  (use-package corfu :defer t)
 #+END_SRC
 
 ** cape 补全框架
