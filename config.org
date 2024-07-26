@@ -399,6 +399,29 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   (use-package minions :config (minions-mode))
 #+END_SRC
 
+** nerd-font
+
+#+begin_src emacs-lisp
+  (use-package nerd-icons
+    :defer t)
+#+end_src
+
+*** nerd-icons-dired
+
+#+begin_src emacs-lisp
+  (use-package nerd-icons-dired
+    :after nerd-icons
+    :hook
+    (dired-mode . nerd-icons-dired-mode))
+#+end_src
+
+** diredfl
+
+#+begin_src emacs-lisp
+  (use-package diredfl
+    :hook (dired-mode . diredfl-mode))
+#+end_src
+
 ** init-ui.el 文件尾
 
 #+BEGIN_SRC emacs-lisp
@@ -563,6 +586,16 @@ flycheck 属于是一个广泛使用的语法检查包！
 
 #+begin_src emacs-lisp
   (use-package olivetti :hook (org-mode . olivetti-mode))
+#+end_src
+
+** format all code
+
+使用 [[https://github.com/lassik/emacs-format-all-the-code][emacs-format-all-the-code]] 来进行格式化操作，不使用 lsp 的 format 功能
+
+#+begin_src emacs-lisp
+  (use-package format-all
+    :commands format-all-mode
+    :hook (prog-mode . format-all-mode))
 #+end_src
 
 ** init-edit.el 文件尾
@@ -1623,16 +1656,6 @@ emacs 的 calibredb 客户端，支持在 emacs 中管理和阅读图书！
 ** elisp lang
 
 为 elisp 做相关配置
-
-*** elisp-autofmt
-
-[[https://codeberg.org/ideasman42/emacs-elisp-autofmt][elisp-autofmt]] ，用于自动格式化 elisp 代码。
-
-#+begin_src emacs-lisp
-  (use-package elisp-autofmt
-    :commands (elisp-autofmt-mode elisp-autofmt-buffer)
-    :hook (emacs-lisp-mode . elisp-autofmt-mode))
-#+end_src
 
 *** highlight-defined
 
