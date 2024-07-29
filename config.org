@@ -422,6 +422,12 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     :hook (dired-mode . diredfl-mode))
 #+end_src
 
+** dired 配置
+
+#+begin_src emacs-lisp
+  (setq dired-listing-switches "-alh --group-directories-first")
+#+end_src
+
 ** init-ui.el 文件尾
 
 #+BEGIN_SRC emacs-lisp
@@ -585,7 +591,7 @@ flycheck 属于是一个广泛使用的语法检查包！
 该包将会自动调整窗口的边距
 
 #+begin_src emacs-lisp
-  (use-package olivetti :hook (org-mode . olivetti-mode))
+  (use-package olivetti :hook (org-mode . olivetti-mode) (markdown-mode . olivetti-mode))
 #+end_src
 
 ** format all code
@@ -1445,7 +1451,7 @@ Emacs的补全设置。
       (remove-hook
        'post-self-insert-hook 'add-space-between-chinese-and-english)))
 
-  (use-package emacs :ensure nil :hook (org-mode . auto-space-mode))
+  (use-package emacs :ensure nil :hook (org-mode . auto-space-mode) (markdown-mode . auto-space-mode))
 #+end_src
 
 ** init-tools.el 文件尾
