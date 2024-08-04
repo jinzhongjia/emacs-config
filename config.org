@@ -504,6 +504,16 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
    (global-auto-revert-non-file-buffers t))
 #+END_SRC
 
+** indent bar
+
+使用 [[https://github.com/jdtsmith/indent-bars][indent-bars]] 尝试进行快速的缩进
+
+#+begin_src emacs-lisp
+  (use-package indent-bars
+    :ensure (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
+    :hook (prog-mode . indent-bars-mode))
+#+end_src
+
 ** symbol-overlay
 
 更高效地符号高亮插件
@@ -1397,6 +1407,14 @@ Emacs的补全设置。
       fanyi-etymon-provider
       ;; Longman
       fanyi-longman-provider)))
+#+end_src
+
+** copilot-chat
+
+#+begin_src emacs-lisp
+  (use-package copilot-chat
+    :ensure (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+    :after request)
 #+end_src
 
 ** ch-en-space
