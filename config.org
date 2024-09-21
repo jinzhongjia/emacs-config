@@ -1,4 +1,5 @@
 * 目录 :TOC:
+- [[#前言][前言]]
 - [[#early-initel][early-init.el]]
 - [[#initel][init.el]]
   - [[#initel-文件头][init.el 文件头]]
@@ -70,6 +71,7 @@
   - [[#magit-todo][magit-todo]]
   - [[#diff-hl-高亮显示修改的部分][diff-hl 高亮显示修改的部分]]
   - [[#magit-delta-增强-git-diff][magit-delta 增强 ~git diff~]]
+  - [[#emsg-blame][emsg-blame]]
   - [[#init-devel-文件尾][init-dev.el 文件尾]]
 - [[#init-toolsel][init-tools.el]]
   - [[#init-toolsel-文件头][init-tools.el 文件头]]
@@ -104,6 +106,10 @@
 - [[#init-aiel][init-ai.el]]
   - [[#init-aiel-文件头][init-ai.el 文件头]]
   - [[#init-aiel-文件尾][init-ai.el 文件尾]]
+
+* 前言
+
+这是我自己的 emacs 配置！
 
 * early-init.el 
 :PROPERTIES:
@@ -1340,7 +1346,7 @@ consult 的 git 扩展
 :HEADER-ARGS: :tangle lisp/init-dev.el :mkdirp yes
 :END:
 
-开发使用的一些工具！
+保存的主要是版本管理工具。
 
 ** init-dev.el 文件头
 #+BEGIN_SRC emacs-lisp
@@ -1391,7 +1397,43 @@ consult 的 git 扩展
 #+BEGIN_SRC emacs-lisp
   (use-package magit-delta :hook (magit-mode . magit-delta-mode))
 #+END_SRC
+
+** emsg-blame
+
+[[https://github.com/ISouthRain/emsg-blame][emsg-blame]] 便捷查看 git blame commit 信息的工具，非常好用。
+
+#+begin_src emacs-lisp
+  (use-package emsg-blame
+    :ensure
+    '(emsg-blame
+      :type git
+      :host github
+      :repo "ISouthRain/emsg-blame")
+    :custom
+    (emsg-blame-background nil "enable emsg blame background")
+    (emsg-blame-display
+     (lambda ()
+       "Display git blame message, right-aligned with Magit-style faces.
+  If another message is already being displayed, display both messages unless they
+  do not both fit in the echo area."
+       (let* ((message-log-max nil) ; prevent messages from being logged to *Messages*
+              (cur-msg (or (current-message) ""))
+              (blm-msg (format "%s %s %s "
+                               emsg-blame--commit-summary
+                               (propertize emsg-blame--commit-author 'face 'magit-log-author)
+                               (propertize emsg-blame--commit-date 'face 'magit-log-date)))
+              (available-width (max 0 (- (frame-width) (string-width cur-msg) 1)))
+              (blm-msg-width (string-width blm-msg))
+              (padding (max 0 (- available-width blm-msg-width)))
+              (rev-blm-msg (concat (make-string padding ?\s) blm-msg)))
+         (if (> blm-msg-width available-width)
+             (message blm-msg)
+           (message (concat cur-msg rev-blm-msg))))))
+    :config (global-emsg-blame-mode))
+#+end_src
+
 ** init-dev.el 文件尾
+
 #+BEGIN_SRC emacs-lisp
 
 (provide 'init-dev)

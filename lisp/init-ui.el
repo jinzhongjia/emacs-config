@@ -178,7 +178,7 @@
       (set-language-environment "UTF-8")
       (setq locale-coding-system 'utf-8-unix)
       (setq default-process-coding-system '(utf-8-unix . utf-8-unix))
-
+      
       ;;windows没有启用unicode时，中文语言是gbk编码gb18030会导致有些中文字符找不到字体
       ;; 系统如果开启了 unicode 支持，那么就不用设置这个
                                         ;(when (eq system-type 'windows-nt)
