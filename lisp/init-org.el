@@ -7,7 +7,7 @@
   :ensure t
   :custom-face
   ;; 设置Org mode标题以及每级标题行的大小
-  (org-document-title ((t (:height 1.75 :weight bold))))
+  (org-document-title ((t (:height 1.3 :weight bold))))
   (org-level-1 ((t (:height 1.2 :weight bold))))
   (org-level-2 ((t (:height 1.15 :weight bold))))
   (org-level-3 ((t (:height 1.1 :weight bold))))
@@ -99,6 +99,62 @@
     (plist-put org-format-latex-options :scale 2.5))
   )
 
+(use-package ox
+  :ensure nil
+  :after org
+  :custom
+  (org-export-with-toc t)
+  (org-export-with-drawers nil)
+  (org-export-with-priority t)
+  (org-export-with-footnotes t)
+  (org-export-with-smart-quotes t)
+  (org-export-with-section-numbers t)
+  (org-export-with-sub-superscripts '{})
+  (org-export-use-babel t)
+  (org-export-headline-levels 9)
+  (org-export-coding-system 'utf-8)
+  (org-export-with-broken-links 'mark)
+  (org-export-default-language "zh-CN") ; 默认是en
+  (org-html-htmlize-output-type 'css)
+  (org-html-head-include-default-style nil)
+  :config
+  ;; 很奇怪，这个变量通过 custom 设置无效，但是 setq 生效
+  (setq org-export-exclude-tags '("TOC")))
+
+;; export extra
+(use-package ox-extra
+  :ensure nil
+  :after org
+  :config
+  (ox-extras-activate '(ignore-headlines)))
+
+(use-package ox-html
+  :ensure nil
+  :after org
+  :init
+  ;; add support for video
+  (defun org-video-link-export (path desc backend)
+    (let ((ext (file-name-extension path)))
+      (cond
+       ((eq 'html backend)
+        (format "<video width='800' preload='metadata' controls='controls'><source type='video/%s' src='%s' /></video>" ext path))
+       ;; fall-through case for everything else
+       (t
+        path))))
+  (org-link-set-parameters "video" :export 'org-video-link-export)
+  :custom
+  (org-html-doctype "html5")
+  (org-html-html5-fancy t)
+  (org-html-checkbox-type 'unicode)
+  (org-html-validation-link nil))
+
+(use-package htmlize
+  :ensure t
+  :after org
+  :custom
+  (htmlize-pre-style t)
+  (htmlize-output-type 'css))
+
 
 
 (add-hook 'org-mode-hook 'org-indent-mode)
@@ -110,7 +166,6 @@
          (markdown-mode . valign-mode)))
 
 (use-package org-appear
-  :ensure (org-appear :host github :repo "awth13/org-appear" :branch "org-9.7-fixes")
   :hook (org-mode . org-appear-mode))
 
 (use-package toc-org
