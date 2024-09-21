@@ -155,6 +155,18 @@
   (htmlize-pre-style t)
   (htmlize-output-type 'css))
 
+(use-package ol
+  :ensure nil
+  :defer t
+  :custom
+  (org-link-keep-stored-after-insertion t)
+  (org-link-abbrev-alist '(("github"        . "https://github.com/")
+                           ("gitlab"        . "https://gitlab.com/")
+                           ("google"        . "https://google.com/search?q=")
+                           ("wiki"          . "https://en.wikipedia.org/wiki/")
+                           ("youtube"       . "https://youtube.com/watch?v=")
+                           ("zhihu"         . "https://zhihu.com/question/"))))
+
 
 
 (add-hook 'org-mode-hook 'org-indent-mode)

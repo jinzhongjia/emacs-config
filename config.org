@@ -46,6 +46,7 @@
   - [[#init-orgel-文件头][init-org.el 文件头]]
   - [[#org-调整][org 调整]]
   - [[#org-导出调整][org 导出调整]]
+  - [[#org-链接类型][org 链接类型]]
   - [[#org-symbols-prettify][org symbols prettify]]
   - [[#开启-org-indent][开启 org indent]]
   - [[#org-contrib][org-contrib]]
@@ -995,6 +996,24 @@ flycheck 属于是一个广泛使用的语法检查包！
     :custom
     (htmlize-pre-style t)
     (htmlize-output-type 'css))
+#+end_src
+
+** org 链接类型
+
+在 ~org~ 文件里通过 ~C-c C-l~ 来插入链接
+
+#+begin_src emacs-lisp
+  (use-package ol
+    :ensure nil
+    :defer t
+    :custom
+    (org-link-keep-stored-after-insertion t)
+    (org-link-abbrev-alist '(("github"        . "https://github.com/")
+                             ("gitlab"        . "https://gitlab.com/")
+                             ("google"        . "https://google.com/search?q=")
+                             ("wiki"          . "https://en.wikipedia.org/wiki/")
+                             ("youtube"       . "https://youtube.com/watch?v=")
+                             ("zhihu"         . "https://zhihu.com/question/"))))
 #+end_src
 
 ** org symbols prettify
