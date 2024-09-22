@@ -47,7 +47,6 @@
   - [[#org-调整][org 调整]]
   - [[#org-导出调整][org 导出调整]]
   - [[#org-链接类型][org 链接类型]]
-  - [[#org-symbols-prettify][org symbols prettify]]
   - [[#开启-org-indent][开启 org indent]]
   - [[#org-contrib][org-contrib]]
   - [[#valign-控制对齐][valign 控制对齐]]
@@ -366,7 +365,15 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     (cl-loop for font in '("OpenSansEmoji" "Noto Color Emoji" "Segoe UI Emoji"
                            "EmojiOne Color" "Apple Color Emoji" "Symbola" "Symbol")
              when (font-installed-p font)
-             return (set-fontset-font t 'unicode
+             return (set-fontset-font t 'emoji
+                                      (font-spec :family font
+                                                 :size (cond ((eq system-type 'gnu/linux) 16.5)
+                                                             ((eq system-type 'windows-nt) 15.0)))
+                                      nil 'prepend))
+     (cl-loop for font in '("Segoe UI Symbol"
+                            "Symbola" "Symbol")
+             when (font-installed-p font)
+             return (set-fontset-font t 'unicode-bmp
                                       (font-spec :family font
                                                  :size (cond ((eq system-type 'gnu/linux) 16.5)
                                                              ((eq system-type 'windows-nt) 15.0)))
@@ -1014,12 +1021,6 @@ flycheck 属于是一个广泛使用的语法检查包！
                              ("wiki"          . "https://en.wikipedia.org/wiki/")
                              ("youtube"       . "https://youtube.com/watch?v=")
                              ("zhihu"         . "https://zhihu.com/question/"))))
-#+end_src
-
-** org symbols prettify
-
-#+begin_src emacs-lisp
-  
 #+end_src
 
 ** 开启 org indent
@@ -1978,6 +1979,8 @@ highlight-defined
 ;;; Code:
 
 #+END_SRC
+
+待补充！
 
 ** init-ai.el 文件尾
 

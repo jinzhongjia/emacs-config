@@ -167,8 +167,6 @@
                            ("youtube"       . "https://youtube.com/watch?v=")
                            ("zhihu"         . "https://zhihu.com/question/"))))
 
-
-
 (add-hook 'org-mode-hook 'org-indent-mode)
 
 (use-package org-contrib :after org)
