@@ -48,11 +48,13 @@
   - [[#org-导出调整][org 导出调整]]
   - [[#org-链接类型][org 链接类型]]
   - [[#开启-org-indent][开启 org indent]]
-  - [[#org-contrib][org-contrib]]
+  - [[#org-contrib-org-工具][org-contrib org 工具]]
   - [[#valign-控制对齐][valign 控制对齐]]
   - [[#org-appear-自动展开强调链接][org-appear 自动展开强调链接]]
-  - [[#toc-org][toc-org]]
-  - [[#ox-gfm][ox-gfm]]
+  - [[#toc-org-生成目录][toc-org 生成目录]]
+  - [[#ox-gfm-导出为-markdown][ox-gfm 导出为 markdown]]
+  - [[#org-margin-突出显示标题][org-margin 突出显示标题]]
+  - [[#org-fragtog-自动切换-latex-渲染][org-fragtog 自动切换 latex 渲染]]
   - [[#init-orgel-文件尾][init-org.el 文件尾]]
 - [[#init-mdel][init-md.el]]
   - [[#init-mdel-文件头][init-md.el 文件头]]
@@ -890,7 +892,7 @@ flycheck 属于是一个广泛使用的语法检查包！
     ;; 自动显示图片
     (org-startup-with-inline-images t)
     ;; 默认以Overview的模式展示标题行
-    (org-startup-folded 'content)
+    ;; (org-startup-folded 'content)
     ;; 允许字母列表
     (org-list-allow-alphabetical t)
     ;; 列表的下一级设置
@@ -1029,7 +1031,7 @@ flycheck 属于是一个广泛使用的语法检查包！
   (add-hook 'org-mode-hook 'org-indent-mode)
 #+end_src
 
-** org-contrib
+** org-contrib org 工具
 
 #+begin_src emacs-lisp
   (use-package org-contrib :after org)
@@ -1053,7 +1055,7 @@ flycheck 属于是一个广泛使用的语法检查包！
     :hook (org-mode . org-appear-mode))
 #+end_src
 
-** toc-org
+** toc-org 生成目录
 
 为 org 生成目录。
 
@@ -1062,12 +1064,32 @@ flycheck 属于是一个广泛使用的语法检查包！
     :hook (org-mode . toc-org-mode))
 #+end_src
 
-** ox-gfm
+** ox-gfm 导出为 markdown
 
 将 org 导出为 github 风格的 markdown
 
 #+begin_src emacs-lisp
   (use-package ox-gfm :defer t)
+#+end_src
+
+** org-margin 突出显示标题
+
+用于突出标题，但是不应该和 olivetti 一起使用。
+
+#+begin_src emacs-lisp
+  (use-package org-margin
+    :ensure '(org-margin :type git :host github :repo "rougier/org-margin")
+    :disabled t
+    :hook (org-mode . org-margin-mode))
+#+end_src
+
+** org-fragtog 自动切换 latex 渲染
+
+[[https://github.com/io12/org-fragtog][org-fragtog]] 当光标进入和退出时自动切换 Org 模式 LaTeX 片段预览。
+
+#+begin_src emacs-lisp
+  (use-package org-fragtog
+    :hook (org-mode . org-fragtog-mode))
 #+end_src
 
 ** init-org.el 文件尾

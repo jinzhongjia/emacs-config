@@ -61,7 +61,7 @@
   ;; 自动显示图片
   (org-startup-with-inline-images t)
   ;; 默认以Overview的模式展示标题行
-  (org-startup-folded 'content)
+  ;; (org-startup-folded 'content)
   ;; 允许字母列表
   (org-list-allow-alphabetical t)
   ;; 列表的下一级设置
@@ -182,6 +182,14 @@
   :hook (org-mode . toc-org-mode))
 
 (use-package ox-gfm :defer t)
+
+(use-package org-margin
+  :ensure '(org-margin :type git :host github :repo "rougier/org-margin")
+  :disabled t
+  :hook (org-mode . org-margin-mode))
+
+(use-package org-fragtog
+  :hook (org-mode . org-fragtog-mode))
 
 (provide 'init-org)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
