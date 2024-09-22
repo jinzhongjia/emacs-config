@@ -45,9 +45,10 @@
 - [[#init-orgel][init-org.el]]
   - [[#init-orgel-文件头][init-org.el 文件头]]
   - [[#org-调整][org 调整]]
+  - [[#org-modern][org-modern]]
+  - [[#org-modern-indent][org-modern-indent]]
   - [[#org-导出调整][org 导出调整]]
   - [[#org-链接类型][org 链接类型]]
-  - [[#开启-org-indent][开启 org indent]]
   - [[#org-contrib-org-工具][org-contrib org 工具]]
   - [[#valign-控制对齐][valign 控制对齐]]
   - [[#org-appear-自动展开强调链接][org-appear 自动展开强调链接]]
@@ -91,6 +92,7 @@
   - [[#mwin][mwin]]
   - [[#ace-window-窗口导航][ace-window 窗口导航]]
   - [[#helpful帮助增强][helpful帮助增强]]
+  - [[#dirvish][dirvish]]
   - [[#init-toolsel-文件尾][init-tools.el 文件尾]]
 - [[#init-lspel][init-lsp.el]]
   - [[#init-lspel-文件头][init-lsp.el 文件头]]
@@ -545,7 +547,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
           (set-charset-priority 'unicode))
         (prefer-coding-system 'utf-8-unix)
         (modify-coding-system-alist 'process "*" 'utf-8-unix)
-        (set-buffer-file-coding-system 'utf-8-unix)
+        (set-buffer-file-coding-system 'utf-8)
         (set-file-name-coding-system 'utf-8-unix)
         (set-default-coding-systems 'utf-8-unix)
         (set-keyboard-coding-system 'utf-8-unix)
@@ -854,10 +856,18 @@ flycheck 属于是一个广泛使用的语法检查包！
     ;; 处理掉超链接默认的高亮
     (org-link ((t (:foreground "inherit" :underline t))))
     :custom
+    ;; 自动开启 indent mode
+    (org-startup-indented t)
+    ;; 允许字母列表
     (org-list-allow-alphabetical t)
+    ;; 编辑时检查是否在折叠的不可见区域
     (org-fold-catch-invisible-edits 'smart)
+    ;; 设置图片的最大宽度，如果有imagemagick支持将会改变图片实际宽度
+    ;; 四种设置方法：(1080), 1080, t, nil
     (org-image-actual-width nil)
+    ;; 处理中文的换行问题
     (word-wrap-by-category t)
+    ;; 设置标题行之间总是有空格；列表之间根据情况自动加空格
     (org-blank-before-new-entry
      '((heading . t)
        (plain-list-item . auto)))
@@ -929,6 +939,27 @@ flycheck 属于是一个广泛使用的语法检查包！
         (plist-put org-format-latex-options :scale 1.25)
       (plist-put org-format-latex-options :scale 2.5))
     )
+#+end_src
+
+** org-modern
+
+[[https://github.com/minad/org-modern][org-modern]] 美化 org-mode 的插件。
+
+#+begin_src emacs-lisp
+  (use-package org-modern
+    :after org
+    :hook ((org-mode . org-modern-mode)
+           (org-agenda-finalize . org-modern-agenda)))
+#+end_src
+
+** org-modern-indent
+
+#+begin_src emacs-lisp
+  (use-package org-modern-indent
+    :ensure '(org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent")
+    :after org-modern
+    :config ; add late to hook
+    (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 #+end_src
 
 ** org 导出调整
@@ -1023,12 +1054,6 @@ flycheck 属于是一个广泛使用的语法检查包！
                              ("wiki"          . "https://en.wikipedia.org/wiki/")
                              ("youtube"       . "https://youtube.com/watch?v=")
                              ("zhihu"         . "https://zhihu.com/question/"))))
-#+end_src
-
-** 开启 org indent
-
-#+begin_src emacs-elisp
-  (add-hook 'org-mode-hook 'org-indent-mode)
 #+end_src
 
 ** org-contrib org 工具
@@ -1725,6 +1750,31 @@ windows 粘贴函数
            ("C-h x" . helpful-command)
            ([remap describe-key] . helpful-key))
     )
+#+end_src
+
+** dirvish
+
+#+begin_src emacs-lisp
+  (use-package dirvish
+    :hook (after-init . dirvish-override-dired-mode)
+    :bind (:map dired-mode-map
+           ("TAB" . dirvish-toggle-subtree)
+           ("SPC" . dirvish-show-history)
+           ("*"   . dirvish-mark-menu)
+           ("r"   . dirvish-roam)
+           ("b"   . dirvish-goto-bookmark)
+           ("f"   . dirvish-file-info-menu)
+           ("M-n" . dirvish-go-forward-history)
+           ("M-p" . dirvish-go-backward-history)
+           ("M-s" . dirvish-setup-menu)
+           ("M-f" . dirvish-toggle-fullscreen)
+           ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
+           ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
+           ([remap dired-summary] . dirvish-dispatch)
+           ([remap dired-do-copy] . dirvish-yank-menu)
+           ([remap mode-line-other-buffer] . dirvish-other-buffer))
+    :config
+    (dirvish-peek-mode))
 #+end_src
 
 ** init-tools.el 文件尾

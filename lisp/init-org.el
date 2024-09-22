@@ -23,10 +23,18 @@
   ;; 处理掉超链接默认的高亮
   (org-link ((t (:foreground "inherit" :underline t))))
   :custom
+  ;; 自动开启 indent mode
+  (org-startup-indented t)
+  ;; 允许字母列表
   (org-list-allow-alphabetical t)
+  ;; 编辑时检查是否在折叠的不可见区域
   (org-fold-catch-invisible-edits 'smart)
+  ;; 设置图片的最大宽度，如果有imagemagick支持将会改变图片实际宽度
+  ;; 四种设置方法：(1080), 1080, t, nil
   (org-image-actual-width nil)
+  ;; 处理中文的换行问题
   (word-wrap-by-category t)
+  ;; 设置标题行之间总是有空格；列表之间根据情况自动加空格
   (org-blank-before-new-entry
    '((heading . t)
      (plain-list-item . auto)))
@@ -99,6 +107,17 @@
     (plist-put org-format-latex-options :scale 2.5))
   )
 
+(use-package org-modern
+  :after org
+  :hook ((org-mode . org-modern-mode)
+         (org-agenda-finalize . org-modern-agenda)))
+
+(use-package org-modern-indent
+  :ensure '(org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent")
+  :after org-modern
+  :config ; add late to hook
+  (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
+
 (use-package ox
   :ensure nil
   :after org
@@ -166,8 +185,6 @@
                            ("wiki"          . "https://en.wikipedia.org/wiki/")
                            ("youtube"       . "https://youtube.com/watch?v=")
                            ("zhihu"         . "https://zhihu.com/question/"))))
-
-(add-hook 'org-mode-hook 'org-indent-mode)
 
 (use-package org-contrib :after org)
 

@@ -178,7 +178,7 @@
         (set-charset-priority 'unicode))
       (prefer-coding-system 'utf-8-unix)
       (modify-coding-system-alist 'process "*" 'utf-8-unix)
-      (set-buffer-file-coding-system 'utf-8-unix)
+      (set-buffer-file-coding-system 'utf-8)
       (set-file-name-coding-system 'utf-8-unix)
       (set-default-coding-systems 'utf-8-unix)
       (set-keyboard-coding-system 'utf-8-unix)

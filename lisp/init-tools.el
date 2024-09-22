@@ -102,6 +102,27 @@
          ([remap describe-key] . helpful-key))
   )
 
+(use-package dirvish
+  :hook (after-init . dirvish-override-dired-mode)
+  :bind (:map dired-mode-map
+         ("TAB" . dirvish-toggle-subtree)
+         ("SPC" . dirvish-show-history)
+         ("*"   . dirvish-mark-menu)
+         ("r"   . dirvish-roam)
+         ("b"   . dirvish-goto-bookmark)
+         ("f"   . dirvish-file-info-menu)
+         ("M-n" . dirvish-go-forward-history)
+         ("M-p" . dirvish-go-backward-history)
+         ("M-s" . dirvish-setup-menu)
+         ("M-f" . dirvish-toggle-fullscreen)
+         ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
+         ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
+         ([remap dired-summary] . dirvish-dispatch)
+         ([remap dired-do-copy] . dirvish-yank-menu)
+         ([remap mode-line-other-buffer] . dirvish-other-buffer))
+  :config
+  (dirvish-peek-mode))
+
 (provide 'init-tools)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; init-tools.el ends here
