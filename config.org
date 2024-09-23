@@ -355,6 +355,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     (find-font (font-spec :name font-name)))
 
   (when (display-graphic-p)
+    ;; set default font
     (cl-loop for font in '("Maple Mono SC NF" "Cascadia Code" "SF Mono" "Source Code Pro"
                            "Fira Code" "Menlo" "Monaco" "Dejavu Sans Mono"
                            "Lucida Console" "Consolas" "SAS Monospace")
@@ -366,33 +367,44 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
                                       :slant 'normal
                                       :size (cond ((eq system-type 'gnu/linux) 14.0)
                                                   ((eq system-type 'windows-nt) 12.5)))))
-    (cl-loop for font in '("OpenSansEmoji" "Noto Color Emoji" "Segoe UI Emoji"
-                           "EmojiOne Color" "Apple Color Emoji" "Symbola" "Symbol")
+    ;; 特殊字符需要安装 Symbola 字体
+    ;; https://www.wfonts.com/font/symbola
+    ;; "Emacs 28 now has 'emoji . before, emoji is part of 'symbol"
+    ;; 根据上面这句话应该写成 'emoji 就可以了，但是由于 Emoji 本身
+    ;; 分布比较散，所以还是先设置 'unicode 后再设置 CJK 比较靠谱。
+    ;; 特例：'emoji 就会导致 ⛈️ fallback 到 ⛈
+    ;; https://emacs-china.org/t/emacs/15676/34
+    (cl-loop for font in '("Apple Color Emoji"
+                           "Noto Color Emoji"
+                           "Noto Emoji"
+                           "Segoe UI Emoji"
+                           "Symbola")
              when (font-installed-p font)
-             return (set-fontset-font t 'emoji
+             return (set-fontset-font t 'unicode
                                       (font-spec :family font
                                                  :size (cond ((eq system-type 'gnu/linux) 16.5)
                                                              ((eq system-type 'windows-nt) 15.0)))
                                       nil 'prepend))
-     (cl-loop for font in '("Segoe UI Symbol"
-                            "Symbola" "Symbol")
+    (cl-loop for font in '("Segoe UI Symbol"
+                           "Symbola" "Symbol")
              when (font-installed-p font)
              return (set-fontset-font t 'unicode-bmp
                                       (font-spec :family font
                                                  :size (cond ((eq system-type 'gnu/linux) 16.5)
                                                              ((eq system-type 'windows-nt) 15.0)))
                                       nil 'prepend))
-    (cl-loop for font in '("霞鹜文楷" "思源黑体 CN" "思源宋体 CN" "微软雅黑 CN"
-                           "Source Han Sans CN" "Source Han Serif CN"
-                           "WenQuanYi Micro Hei" "文泉驿等宽微米黑"
-                           "Microsoft Yahei UI" "Microsoft Yahei")
+    (cl-loop for font in '("LXGW WenKai Screen")
              when (font-installed-p font)
-             return (set-fontset-font t 'han
-                                      (font-spec :name font
-                                                 :weight 'normal
-                                                 :slant 'normal
-                                                 :size (cond ((eq system-type 'gnu/linux) 16.5)
-                                                             ((eq system-type 'windows-nt) 15.0))))))
+             return (dolist (charset '(kana han symbol cjk-misc bopomofo))
+                      (set-fontset-font t 'han
+                                        (font-spec :name font
+                                                   :weight 'normal
+                                                   :slant 'normal
+                                                   :size (cond ((eq system-type 'gnu/linux) 16.5)
+                                                               ((eq system-type 'windows-nt) 15.0))))))
+    ;; Force Emacs to search by using font-spec
+    (set-fontset-font t 'han (font-spec :script 'han) nil 'append)
+    )
 #+end_src
 
 ** ef theme
@@ -949,7 +961,13 @@ flycheck 属于是一个广泛使用的语法检查包！
   (use-package org-modern
     :after org
     :hook ((org-mode . org-modern-mode)
-           (org-agenda-finalize . org-modern-agenda)))
+           (org-agenda-finalize . org-modern-agenda))
+    :custom
+    (org-modern-star ["◉" "○" "✸" "✳" "◈" "◇" "✿" "❀" "✜"])
+    (org-modern-hide-stars 'leading)
+    (line-spacing 0.1)
+    ;; 由于字体问题，暂时禁用掉 org modern table
+    (org-modern-table nil))
 #+end_src
 
 ** org-modern-indent
