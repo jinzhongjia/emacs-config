@@ -109,13 +109,13 @@
 
 (use-package org-modern
   :after org
-  :hook ((org-mode . org-modern-mode)
-         (org-agenda-finalize . org-modern-agenda))
   :custom
   (org-modern-hide-stars 'leading)
   (line-spacing 0.1)
   ;; 由于字体问题，暂时禁用掉 org modern table
-  (org-modern-table nil))
+  (org-modern-table nil)
+  :config
+  (global-org-modern-mode))
 
 (use-package org-modern-indent
   :ensure '(org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent")
