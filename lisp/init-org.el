@@ -112,7 +112,6 @@
   :hook ((org-mode . org-modern-mode)
          (org-agenda-finalize . org-modern-agenda))
   :custom
-  (org-modern-star ["◉" "○" "✸" "✳" "◈" "◇" "✿" "❀" "✜"])
   (org-modern-hide-stars 'leading)
   (line-spacing 0.1)
   ;; 由于字体问题，暂时禁用掉 org modern table
@@ -179,6 +178,45 @@
   :custom
   (htmlize-pre-style t)
   (htmlize-output-type 'css))
+
+(use-package ox-latex
+  :ensure nil
+  :after org
+  :defer t
+  :config
+  (add-to-list 'org-latex-classes
+               '("cn-article"
+                 "\\documentclass[UTF8,a4paper]{article}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+  (add-to-list 'org-latex-classes
+               '("cn-report"
+                 "\\documentclass[11pt,a4paper]{report}"
+                 ("\\chapter{%s}" . "\\chapter*{%s}")
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+  (setq org-latex-default-class "cn-article")
+  (setq org-latex-image-default-height "0.9\\textheight"
+        org-latex-image-default-width "\\linewidth")
+  (setq org-latex-pdf-process
+	    '("xelatex -interaction nonstopmode -output-directory %o %f"
+	      "bibtex %b"
+	      "xelatex -interaction nonstopmode -output-directory %o %f"
+	      "xelatex -interaction nonstopmode -output-directory %o %f"
+	      "rm -fr %b.out %b.log %b.tex %b.brf %b.bbl auto"
+	      ))
+  ;; 使用 Listings 宏包格式化源代码(只是把代码框用 listing 环境框起来，还需要额外的设置)
+  (setq org-latex-listings t)
+  ;; mapping jupyter-python to Python
+  (add-to-list 'org-latex-listings-langs '(jupyter-python "Python"))
+  ;; Options for \lset command（reference to listing Manual)
+
+  )
 
 (use-package ol
   :ensure nil

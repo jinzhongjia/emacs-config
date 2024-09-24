@@ -349,62 +349,90 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 
 ** 字体设置
 
+[[https://archive.casouri.cc/note/2019/emacs-字体与字体集/index.html][emacs 字体与字符集]]，该文章介绍了 emacs 中的字体和字符集的设置。
+
+字体配置，采取定义字符串列表的方式，会优先使用查找到的字体
+
+#+begin_src emacs-lisp
+  (setq my-default-fonts '("Maple Mono SC NF"))
+#+end_src
+
+#+begin_src emacs-lisp
+  (setq my-emoji-fonts '("Noto Color Emoji"
+                         "Segoe UI Emoji"
+                         "Symbola"))
+#+end_src
+
+#+begin_src emacs-lisp
+  (setq my-bmp-fonts '("Segoe UI Symbol"
+                       "Symbola" "Symbol"))
+#+end_src
+
+#+begin_src emacs-lisp
+  (setq my-cjk-fonts '("霞鹜文楷等宽"
+                       "微软雅黑 CN"
+                       "Microsoft Yahei UI"
+                       "Microsoft Ya"))
+#+end_src
+
+定义一个函数用于查找字体是否存在
+
 #+begin_src emacs-lisp
   (defun font-installed-p (font-name)
     "Check if font with FONT-NAME is available."
     (find-font (font-spec :name font-name)))
+#+end_src
 
+设置全局默认通用的字体
+
+#+begin_src emacs-lisp
   (when (display-graphic-p)
-    ;; set default font
-    (cl-loop for font in '("Maple Mono SC NF" "Cascadia Code" "SF Mono" "Source Code Pro"
-                           "Fira Code" "Menlo" "Monaco" "Dejavu Sans Mono"
-                           "Lucida Console" "Consolas" "SAS Monospace")
+    (cl-loop for font in my-default-fonts
              when (font-installed-p font)
-             return (set-face-attribute
-                     'default nil
-                     :font (font-spec :family font
-                                      :weight 'normal
-                                      :slant 'normal
-                                      :size (cond ((eq system-type 'gnu/linux) 14.0)
-                                                  ((eq system-type 'windows-nt) 12.5)))))
-    ;; 特殊字符需要安装 Symbola 字体
-    ;; https://www.wfonts.com/font/symbola
-    ;; "Emacs 28 now has 'emoji . before, emoji is part of 'symbol"
-    ;; 根据上面这句话应该写成 'emoji 就可以了，但是由于 Emoji 本身
-    ;; 分布比较散，所以还是先设置 'unicode 后再设置 CJK 比较靠谱。
-    ;; 特例：'emoji 就会导致 ⛈️ fallback 到 ⛈
-    ;; https://emacs-china.org/t/emacs/15676/34
-    (cl-loop for font in '("Apple Color Emoji"
-                           "Noto Color Emoji"
-                           "Noto Emoji"
-                           "Segoe UI Emoji"
-                           "Symbola")
+             return (set-face-attribute 'default nil :font
+                                        (font-spec :family font :weight 'normal :slant 'normal :size
+                                                   (cond ((eq system-type 'gnu/linux) 14.0)
+                                                         ((eq system-type 'windows-nt) 12.5))))))
+#+end_src
+
+设置 emoji 字体
+
+#+begin_src emacs-lisp
+  (when (display-graphic-p)
+    (cl-loop for font in my-emoji-fonts
              when (font-installed-p font)
-             return (set-fontset-font t 'unicode
+             return (set-fontset-font t 'emoji
                                       (font-spec :family font
                                                  :size (cond ((eq system-type 'gnu/linux) 16.5)
                                                              ((eq system-type 'windows-nt) 15.0)))
-                                      nil 'prepend))
-    (cl-loop for font in '("Segoe UI Symbol"
-                           "Symbola" "Symbol")
-             when (font-installed-p font)
-             return (set-fontset-font t 'unicode-bmp
-                                      (font-spec :family font
-                                                 :size (cond ((eq system-type 'gnu/linux) 16.5)
-                                                             ((eq system-type 'windows-nt) 15.0)))
-                                      nil 'prepend))
-    (cl-loop for font in '("LXGW WenKai Screen")
-             when (font-installed-p font)
-             return (dolist (charset '(kana han symbol cjk-misc bopomofo))
-                      (set-fontset-font t 'han
-                                        (font-spec :name font
-                                                   :weight 'normal
-                                                   :slant 'normal
+                                      nil 'prepend)))
+#+end_src
+
+设置 unicode-bmp 字体
+
+#+begin_src emacs-lisp
+  (when (display-graphic-p)
+       (cl-loop for font in my-bmp-fonts
+               when (font-installed-p font)
+               return (set-fontset-font t 'unicode-bmp
+                                        (font-spec :family font
                                                    :size (cond ((eq system-type 'gnu/linux) 16.5)
-                                                               ((eq system-type 'windows-nt) 15.0))))))
-    ;; Force Emacs to search by using font-spec
-    (set-fontset-font t 'han (font-spec :script 'han) nil 'append)
-    )
+                                                               ((eq system-type 'windows-nt) 15.0)))
+                                        nil 'prepend)))
+#+end_src
+
+设置中文字体
+
+#+begin_src emacs-lisp
+  (when (display-graphic-p)
+    (cl-loop for font in my-cjk-fonts
+             when (font-installed-p font)
+             return (set-fontset-font t 'han
+                                      (font-spec :name font
+                                                 :weight 'normal
+                                                 :slant 'normal
+                                                 :size (cond ((eq system-type 'gnu/linux) 16.5)
+                                                             ((eq system-type 'windows-nt) 15.0))))))
 #+end_src
 
 ** ef theme
@@ -963,7 +991,6 @@ flycheck 属于是一个广泛使用的语法检查包！
     :hook ((org-mode . org-modern-mode)
            (org-agenda-finalize . org-modern-agenda))
     :custom
-    (org-modern-star ["◉" "○" "✸" "✳" "◈" "◇" "✿" "❀" "✜"])
     (org-modern-hide-stars 'leading)
     (line-spacing 0.1)
     ;; 由于字体问题，暂时禁用掉 org modern table
@@ -1054,6 +1081,49 @@ flycheck 属于是一个广泛使用的语法检查包！
     :custom
     (htmlize-pre-style t)
     (htmlize-output-type 'css))
+#+end_src
+
+*** 导出 PDF
+
+#+begin_src emacs-lisp
+  (use-package ox-latex
+    :ensure nil
+    :after org
+    :defer t
+    :config
+    (add-to-list 'org-latex-classes
+                 '("cn-article"
+                   "\\documentclass[UTF8,a4paper]{article}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+    (add-to-list 'org-latex-classes
+                 '("cn-report"
+                   "\\documentclass[11pt,a4paper]{report}"
+                   ("\\chapter{%s}" . "\\chapter*{%s}")
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+    (setq org-latex-default-class "cn-article")
+    (setq org-latex-image-default-height "0.9\\textheight"
+          org-latex-image-default-width "\\linewidth")
+    (setq org-latex-pdf-process
+  	    '("xelatex -interaction nonstopmode -output-directory %o %f"
+  	      "bibtex %b"
+  	      "xelatex -interaction nonstopmode -output-directory %o %f"
+  	      "xelatex -interaction nonstopmode -output-directory %o %f"
+  	      "rm -fr %b.out %b.log %b.tex %b.brf %b.bbl auto"
+  	      ))
+    ;; 使用 Listings 宏包格式化源代码(只是把代码框用 listing 环境框起来，还需要额外的设置)
+    (setq org-latex-listings t)
+    ;; mapping jupyter-python to Python
+    (add-to-list 'org-latex-listings-langs '(jupyter-python "Python"))
+    ;; Options for \lset command（reference to listing Manual)
+
+    )
 #+end_src
 
 ** org 链接类型

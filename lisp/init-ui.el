@@ -3,61 +3,59 @@
 
 ;;; Code:
 
+(setq my-default-fonts '("Maple Mono SC NF"))
+
+(setq my-emoji-fonts '("Noto Color Emoji"
+                       "Segoe UI Emoji"
+                       "Symbola"))
+
+(setq my-bmp-fonts '("Segoe UI Symbol"
+                     "Symbola" "Symbol"))
+
+(setq my-cjk-fonts '("霞鹜文楷等宽"
+                     "微软雅黑 CN"
+                     "Microsoft Yahei UI"
+                     "Microsoft Ya"))
+
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
 
 (when (display-graphic-p)
-  ;; set default font
-  (cl-loop for font in '("Maple Mono SC NF" "Cascadia Code" "SF Mono" "Source Code Pro"
-                         "Fira Code" "Menlo" "Monaco" "Dejavu Sans Mono"
-                         "Lucida Console" "Consolas" "SAS Monospace")
+  (cl-loop for font in my-default-fonts
            when (font-installed-p font)
-           return (set-face-attribute
-                   'default nil
-                   :font (font-spec :family font
-                                    :weight 'normal
-                                    :slant 'normal
-                                    :size (cond ((eq system-type 'gnu/linux) 14.0)
-                                                ((eq system-type 'windows-nt) 12.5)))))
-  ;; 特殊字符需要安装 Symbola 字体
-  ;; https://www.wfonts.com/font/symbola
-  ;; "Emacs 28 now has 'emoji . before, emoji is part of 'symbol"
-  ;; 根据上面这句话应该写成 'emoji 就可以了，但是由于 Emoji 本身
-  ;; 分布比较散，所以还是先设置 'unicode 后再设置 CJK 比较靠谱。
-  ;; 特例：'emoji 就会导致 ⛈️ fallback 到 ⛈
-  ;; https://emacs-china.org/t/emacs/15676/34
-  (cl-loop for font in '("Apple Color Emoji"
-                         "Noto Color Emoji"
-                         "Noto Emoji"
-                         "Segoe UI Emoji"
-                         "Symbola")
+           return (set-face-attribute 'default nil :font
+                                      (font-spec :family font :weight 'normal :slant 'normal :size
+                                                 (cond ((eq system-type 'gnu/linux) 14.0)
+                                                       ((eq system-type 'windows-nt) 12.5))))))
+
+(when (display-graphic-p)
+  (cl-loop for font in my-emoji-fonts
            when (font-installed-p font)
-           return (set-fontset-font t 'unicode
+           return (set-fontset-font t 'emoji
                                     (font-spec :family font
                                                :size (cond ((eq system-type 'gnu/linux) 16.5)
                                                            ((eq system-type 'windows-nt) 15.0)))
-                                    nil 'prepend))
-  (cl-loop for font in '("Segoe UI Symbol"
-                         "Symbola" "Symbol")
-           when (font-installed-p font)
-           return (set-fontset-font t 'unicode-bmp
-                                    (font-spec :family font
-                                               :size (cond ((eq system-type 'gnu/linux) 16.5)
-                                                           ((eq system-type 'windows-nt) 15.0)))
-                                    nil 'prepend))
-  (cl-loop for font in '("LXGW WenKai Screen")
-           when (font-installed-p font)
-           return (dolist (charset '(kana han symbol cjk-misc bopomofo))
-                    (set-fontset-font t 'han
-                                      (font-spec :name font
-                                                 :weight 'normal
-                                                 :slant 'normal
+                                    nil 'prepend)))
+
+(when (display-graphic-p)
+     (cl-loop for font in my-bmp-fonts
+             when (font-installed-p font)
+             return (set-fontset-font t 'unicode-bmp
+                                      (font-spec :family font
                                                  :size (cond ((eq system-type 'gnu/linux) 16.5)
-                                                             ((eq system-type 'windows-nt) 15.0))))))
-  ;; Force Emacs to search by using font-spec
-  (set-fontset-font t 'han (font-spec :script 'han) nil 'append)
-  )
+                                                             ((eq system-type 'windows-nt) 15.0)))
+                                      nil 'prepend)))
+
+(when (display-graphic-p)
+  (cl-loop for font in my-cjk-fonts
+           when (font-installed-p font)
+           return (set-fontset-font t 'han
+                                    (font-spec :name font
+                                               :weight 'normal
+                                               :slant 'normal
+                                               :size (cond ((eq system-type 'gnu/linux) 16.5)
+                                                           ((eq system-type 'windows-nt) 15.0))))))
 
 (use-package modus-themes)
 
