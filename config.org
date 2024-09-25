@@ -47,6 +47,7 @@
   - [[#org-调整][org 调整]]
   - [[#org-modern][org-modern]]
   - [[#org-modern-indent][org-modern-indent]]
+  - [[#org-pretty-table][org-pretty-table]]
   - [[#org-导出调整][org 导出调整]]
   - [[#org-链接类型][org 链接类型]]
   - [[#org-contrib-org-工具][org-contrib org 工具]]
@@ -66,7 +67,7 @@
   - [[#init-completionel-文件头][init-completion.el 文件头]]
   - [[#smartparens][smartparens]]
   - [[#vertico-垂直补全系统][vertico 垂直补全系统]]
-  - [[#提升-vertico-体验抄自官方文档][提升 ~vertico~ 体验（抄自官方文档）：]]
+  - [[#提升-vertico-体验抄自官方文档][提升 ~vertico~ 体验（抄自官方文档）]]
   - [[#orderless-无序搜索][orderless 无序搜索]]
   - [[#marginalia-增加提示信息支持][~marginalia~ 增加提示信息支持]]
   - [[#consult-配置][consult 配置]]
@@ -799,6 +800,7 @@ flycheck 属于是一个广泛使用的语法检查包！
 #+END_SRC
 
 ** ~save-place~ 记住关闭文件是光标位置
+
 #+begin_src emacs-lisp
   ;; 自动记住每个文件的最后一次访问的光标位置
   (use-package saveplace :ensure nil :init (save-place-mode) :defer t)
@@ -874,6 +876,8 @@ flycheck 属于是一个广泛使用的语法检查包！
 #+END_SRC
 
 ** org 调整
+
+org 还是使用最新的比较好！！！
 
 #+begin_src emacs-lisp
   (use-package org
@@ -991,7 +995,7 @@ flycheck 属于是一个广泛使用的语法检查包！
     :custom
     (org-modern-hide-stars 'leading)
     (line-spacing 0.1)
-    ;; 由于字体问题，暂时禁用掉 org modern table
+    ;; 由于字体问题，禁用掉 table 美化
     (org-modern-table nil)
     :config
     (global-org-modern-mode))
@@ -999,12 +1003,24 @@ flycheck 属于是一个广泛使用的语法检查包！
 
 ** org-modern-indent
 
+[[https://github.com/jdtsmith/org-modern-indent][org-modern-indent]] 优化在 org-modern 开启下的 indent，效果很不错！
+
 #+begin_src emacs-lisp
   (use-package org-modern-indent
     :ensure '(org-modern-indent :type git :host github :repo "jdtsmith/org-modern-indent")
     :after org-modern
     :config ; add late to hook
     (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
+#+end_src
+
+** org-pretty-table
+
+[[https://github.com/Fuco1/org-pretty-table][org-pretty-table]] 美化 org 的 table，它的效果实际体验来看的话，比 org-modern 好得多！
+
+#+begin_src emacs-lisp
+  (use-package org-pretty-table
+    :ensure '(org-pretty-table :type git :host github :repo "Fuco1/org-pretty-table")
+    :hook (org-mode . org-pretty-table-mode))
 #+end_src
 
 ** org 导出调整
@@ -1085,45 +1101,17 @@ flycheck 属于是一个广泛使用的语法检查包！
 
 *** 导出 PDF
 
+org 导出 pdf，首先需要保证已经安装了 latex 相关环境，并且有 ~xelatex~
+
+还需要在要导出的 org 开头添加 ~#+LATEX_HEADER: \usepackage{ctex}~
+
 #+begin_src emacs-lisp
   (use-package ox-latex
     :ensure nil
     :after org
     :defer t
     :config
-    (add-to-list 'org-latex-classes
-                 '("cn-article"
-                   "\\documentclass[UTF8,a4paper]{article}"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-
-    (add-to-list 'org-latex-classes
-                 '("cn-report"
-                   "\\documentclass[11pt,a4paper]{report}"
-                   ("\\chapter{%s}" . "\\chapter*{%s}")
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
-    (setq org-latex-default-class "cn-article")
-    (setq org-latex-image-default-height "0.9\\textheight"
-          org-latex-image-default-width "\\linewidth")
-    (setq org-latex-pdf-process
-  	    '("xelatex -interaction nonstopmode -output-directory %o %f"
-  	      "bibtex %b"
-  	      "xelatex -interaction nonstopmode -output-directory %o %f"
-  	      "xelatex -interaction nonstopmode -output-directory %o %f"
-  	      "rm -fr %b.out %b.log %b.tex %b.brf %b.bbl auto"
-  	      ))
-    ;; 使用 Listings 宏包格式化源代码(只是把代码框用 listing 环境框起来，还需要额外的设置)
-    (setq org-latex-listings t)
-    ;; mapping jupyter-python to Python
-    (add-to-list 'org-latex-listings-langs '(jupyter-python "Python"))
-    ;; Options for \lset command（reference to listing Manual)
-
-    )
+    (setq org-latex-compiler "xelatex"))
 #+end_src
 
 ** org 链接类型
@@ -1304,7 +1292,7 @@ Emacs 的次要模式，聪明地处理括号。
    :init (vertico-mode))
 #+END_SRC
 
-** 提升 ~vertico~ 体验（抄自官方文档）：
+** 提升 ~vertico~ 体验（抄自官方文档）
 
 #+BEGIN_SRC emacs-lisp
   (use-package
@@ -1539,7 +1527,9 @@ consult 的 git 扩展
 [[https://github.com/minad/corfu][corfu]] 是一个补全框架，相较于 ~company~ 更加现代化
 
 #+BEGIN_SRC emacs-lisp
-  (use-package corfu :defer t)
+  (use-package corfu :defer t
+    :custom
+    (corfu-cycle t))
 #+END_SRC
 
 ** cape 补全框架
@@ -1565,7 +1555,8 @@ consult 的 git 扩展
 补全框架 yasnippet
 
 #+BEGIN_SRC emacs-lisp
-  (use-package yasnippet :defer t)
+  (use-package yasnippet :defer t
+    :hook (prog-mode . yas-minor-mode))
 
   (use-package
    doom-snippets

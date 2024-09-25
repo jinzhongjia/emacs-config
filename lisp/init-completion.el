@@ -195,7 +195,9 @@
 (use-package consult-yasnippet
   :after consult)
 
-(use-package corfu :defer t)
+(use-package corfu :defer t
+  :custom
+  (corfu-cycle t))
 
 (use-package
  cape
@@ -211,7 +213,8 @@
  (add-hook 'completion-at-point-functions #'cape-history)
  :config (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
 
-(use-package yasnippet :defer t)
+(use-package yasnippet :defer t
+  :hook (prog-mode . yas-minor-mode))
 
 (use-package
  doom-snippets
