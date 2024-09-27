@@ -116,6 +116,7 @@
   - [[#init-blogel-文件尾][init-blog.el 文件尾]]
 - [[#init-aiel][init-ai.el]]
   - [[#init-aiel-文件头][init-ai.el 文件头]]
+  - [[#copilot-chat][copilot-chat]]
   - [[#init-aiel-文件尾][init-ai.el 文件尾]]
 
 * 前言
@@ -477,7 +478,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   ;; 设置缓冲区的文字方向为从左到右
   (setq bidi-paragraph-direction 'left-to-right)
   ;; 禁止使用双向括号算法
-   (setq bidi-inhibit-bpa t)
+  (setq bidi-inhibit-bpa t)
 
   ;; 设置自动折行宽度为80个字符，默认值为70
   (setq-default fill-column 80)
@@ -504,14 +505,14 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   (setq select-enable-clipboard t) ; 拷贝时使用剪贴板
 
   ;; 鼠标滚动设置
-  ;(setq scroll-step 2)
-  ;(setq scroll-margin 2)
-  ;(setq hscroll-step 2)
-  ;(setq hscroll-margin 2)
-  ;(setq scroll-conservatively 101)
-  ;(setq scroll-up-aggressively 0.01)
-  ;(setq scroll-down-aggressively 0.01)
-  ;(setq scroll-preserve-screen-position 'always)
+                                          ;(setq scroll-step 2)
+                                          ;(setq scroll-margin 2)
+                                          ;(setq hscroll-step 2)
+                                          ;(setq hscroll-margin 2)
+                                          ;(setq scroll-conservatively 101)
+                                          ;(setq scroll-up-aggressively 0.01)
+                                          ;(setq scroll-down-aggressively 0.01)
+                                          ;(setq scroll-preserve-screen-position 'always)
 
   ;; 对于高的行禁止自动垂直滚动
   (setq auto-window-vscroll nil)
@@ -2145,8 +2146,17 @@ highlight-defined
 
 #+END_SRC
 
-待补充！
+** copilot-chat
 
+[[https://github.com/chep/copilot-chat.el][copilot-chat]] 是一第三方实现的插件，支持使用 copilot
+
+#+begin_src emacs-lisp
+  (use-package copilot-chat
+    :ensure (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+    :custom
+    (copilot-chat-curl-program "curl")
+    :after (request org))
+#+end_src
 ** init-ai.el 文件尾
 
 #+BEGIN_SRC emacs-lisp

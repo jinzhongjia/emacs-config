@@ -83,7 +83,7 @@
 ;; 设置缓冲区的文字方向为从左到右
 (setq bidi-paragraph-direction 'left-to-right)
 ;; 禁止使用双向括号算法
- (setq bidi-inhibit-bpa t)
+(setq bidi-inhibit-bpa t)
 
 ;; 设置自动折行宽度为80个字符，默认值为70
 (setq-default fill-column 80)
@@ -110,14 +110,14 @@
 (setq select-enable-clipboard t) ; 拷贝时使用剪贴板
 
 ;; 鼠标滚动设置
-;(setq scroll-step 2)
-;(setq scroll-margin 2)
-;(setq hscroll-step 2)
-;(setq hscroll-margin 2)
-;(setq scroll-conservatively 101)
-;(setq scroll-up-aggressively 0.01)
-;(setq scroll-down-aggressively 0.01)
-;(setq scroll-preserve-screen-position 'always)
+                                        ;(setq scroll-step 2)
+                                        ;(setq scroll-margin 2)
+                                        ;(setq hscroll-step 2)
+                                        ;(setq hscroll-margin 2)
+                                        ;(setq scroll-conservatively 101)
+                                        ;(setq scroll-up-aggressively 0.01)
+                                        ;(setq scroll-down-aggressively 0.01)
+                                        ;(setq scroll-preserve-screen-position 'always)
 
 ;; 对于高的行禁止自动垂直滚动
 (setq auto-window-vscroll nil)
