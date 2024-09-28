@@ -72,7 +72,8 @@
   - [[#marginalia-增加提示信息支持][~marginalia~ 增加提示信息支持]]
   - [[#consult-配置][consult 配置]]
   - [[#corfu-补全框架][corfu 补全框架]]
-  - [[#cape-补全框架][cape 补全框架]]
+  - [[#dabbrev-配置][dabbrev 配置]]
+  - [[#cape-补全后端][cape 补全后端]]
   - [[#yasnippet-补全框架][yasnippet 补全框架]]
   - [[#init-completionel-文件尾][init-completion.el 文件尾]]
 - [[#init-devtl][init-dev.tl]]
@@ -97,6 +98,7 @@
   - [[#init-toolsel-文件尾][init-tools.el 文件尾]]
 - [[#init-lspel][init-lsp.el]]
   - [[#init-lspel-文件头][init-lsp.el 文件头]]
+  - [[#lsp-mode][lsp-mode]]
   - [[#lsp-bridge-配置][lsp-bridge 配置]]
   - [[#init-lspel-文件尾][init-lsp.el 文件尾]]
 - [[#init-treesitterel][init-treesitter.el]]
@@ -165,6 +167,11 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   (setq native-comp-async-report-warnings-errors nil)
 
   (cd "~")
+
+  (setenv "LSP_USE_PLISTS" "true")
+
+  ;; Increase the amount of data which Emacs reads from the process
+  (setq read-process-output-max (* 1024 1024))
 
   ; custom.el
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -292,7 +299,6 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 #+begin_src emacs-lisp
   (defvar cabins--os-win (memq system-type '(ms-dos windows-nt cygwin)))
   (defvar cabins--os-mac (eq system-type 'darwin))
-
 
   (when (and cabins--os-win
     	       (boundp 'w32-get-true-file-attributes))
@@ -765,6 +771,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 #+begin_src emacs-lisp
   (use-package indent-bars
     :ensure (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
+    :disabled t
     :hook (prog-mode . indent-bars-mode))
 #+end_src
 
@@ -778,7 +785,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 
 ** flycheck
 
-flycheck 属于是一个广泛使用的语法检查包！
+[[https://github.com/flycheck/flycheck][flycheck]]，属于是一个广泛使用的语法检查包！
 
 #+begin_src emacs-lisp
   (use-package flycheck :defer t :init (global-flycheck-mode))
@@ -820,7 +827,7 @@ flycheck 属于是一个广泛使用的语法检查包！
 
 ** olivetti 次要模式自动平衡窗口边距
 
-该包将会自动调整窗口的边距
+[[https://github.com/rnkn/olivetti][olivetti]]，该包将会自动调整窗口的边距
 
 #+begin_src emacs-lisp
   (use-package olivetti
@@ -1528,28 +1535,103 @@ consult 的 git 扩展
 [[https://github.com/minad/corfu][corfu]] 是一个补全框架，相较于 ~company~ 更加现代化
 
 #+BEGIN_SRC emacs-lisp
-  (use-package corfu :defer t
+  (use-package corfu
+    :defer t
+    :after savehist
     :custom
-    (corfu-cycle t))
+    (corfu-cycle t)
+    (corfu-auto t)
+    (corfu-separator ?\s)
+    (corfu-preselect 'prompt)
+    (corfu-scroll-margin 5)
+    :bind
+    (:map corfu-map
+          ("TAB" . corfu-next)
+          ([tab] . corfu-next)
+          ("S-TAB" . corfu-previous)
+          ([backtab] . corfu-previous))
+    :init
+    (global-corfu-mode)
+    (corfu-history-mode)
+    (corfu-indexed-mode)
+    (add-to-list 'savehist-additional-variables 'corfu-history))
 #+END_SRC
 
-** cape 补全框架
+*** 优化 emacs 体验
+
+#+begin_src emacs-lisp
+  (use-package emacs
+    :ensure nil
+    :custom
+    ;; TAB cycle if there are only few candidates
+    ;; (completion-cycle-threshold 3)
+
+    ;; Enable indentation+completion using the TAB key.
+    ;; `completion-at-point' is often bound to M-TAB.
+    (tab-always-indent 'complete))
+#+end_src
+
+*** corfu-nerd-icons
+
+[[https://github.com/LuigiPiucco/nerd-icons-corfu][corfu-nerd-icons]]，为 corfu 增加 nerd icons 支持
+
+#+begin_src emacs-lisp
+  (use-package nerd-icons-corfu
+    :after corfu
+    :config
+    (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+#+end_src
+
+** dabbrev 配置
+
+#+begin_src emacs-lisp
+    ;; Use Dabbrev with Corfu!
+  (use-package dabbrev
+    :ensure nil
+    ;; Swap M-/ and C-M-/
+    :bind (("M-/" . dabbrev-completion)
+           ("C-M-/" . dabbrev-expand))
+    :config
+    (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
+    ;; Since 29.1, use `dabbrev-ignored-buffer-regexps' on older.
+    (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
+    (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
+    (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode))
+#+end_src
+
+** cape 补全后端
 
 #+BEGIN_SRC emacs-lisp
   (use-package
-   cape
-   :defer t
-   :init
-   (add-to-list 'completion-at-point-functions #'cape-file)
-   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-   (add-to-list 'completion-at-point-functions #'cape-keyword) ; programming language keyword
-   (add-to-list 'completion-at-point-functions #'cape-dict)
-   (add-to-list 'completion-at-point-functions #'cape-elisp-symbol) ; elisp symbol
-   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-   (add-to-list 'completion-at-point-functions #'cape-line)
-   (add-hook 'completion-at-point-functions #'cape-history)
-   :config (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
+    cape
+    :defer t
+    :bind ("C-c p" . cape-prefix-map)
+    :init
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    ;(add-to-list 'completion-at-point-functions #'cape-abbrev)
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions #'cape-keyword) ; programming language keyword
+    (add-to-list 'completion-at-point-functions #'cape-dict)
+    (add-to-list 'completion-at-point-functions #'cape-elisp-symbol) ; elisp symbol
+    (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+    ;(add-to-list 'completion-at-point-functions #'cape-line)
+    (add-hook 'completion-at-point-functions #'cape-emoji)
+    (add-hook 'completion-at-point-functions #'cape-tex)
+    (add-hook 'completion-at-point-functions #'cape-history)
+    :config
+    (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
 #+END_SRC
+
+*** cape 集成 yasnippet
+
+通过 [[https://github.com/elken/yasnippet-capf][yasnippet-capf]]，将 yasnippet 集成到 cape 中
+
+#+begin_src emacs-lisp
+  (use-package yasnippet-capf
+    :after cape yasnippet
+    :config
+    (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+#+end_src
 
 ** yasnippet 补全框架
 
@@ -1900,6 +1982,25 @@ lsp 配置，目前主流的 ~lsp client~ 也就是 ~lsp-mode~ ~eglot~ ~lsp-brid
 
 #+END_SRC
 
+** lsp-mode
+
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :commands (lsp lsp-deferred)
+    :custom
+    (lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+    (lsp-idle-delay 0.500)
+    :hook (prog-mode . lsp-deferred))
+#+end_src
+
+*** lsp-ui
+
+[[https://emacs-lsp.github.io/lsp-ui][lsp-ui]]，精致的 lsp ui 功能！
+
+#+begin_src emacs-lisp
+  (use-package lsp-ui :commands lsp-ui-mode)
+#+end_src
+
 ** lsp-bridge 配置
 
 [[https://github.com/manateelazycat/lsp-bridge][lsp-bridge]] 是一个由 ~python~ 实现的 lsp client。
@@ -1929,6 +2030,7 @@ lsp-bridge 的优势：
   (use-package
     lsp-bridge
     :defer t
+    :disabled t
     :ensure
     '(lsp-bridge
       :type git

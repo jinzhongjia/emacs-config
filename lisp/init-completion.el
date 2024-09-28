@@ -195,23 +195,78 @@
 (use-package consult-yasnippet
   :after consult)
 
-(use-package corfu :defer t
+(use-package corfu
+  :defer t
+  :after savehist
   :custom
-  (corfu-cycle t))
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-separator ?\s)
+  (corfu-preselect 'prompt)
+  (corfu-scroll-margin 5)
+  :bind
+  (:map corfu-map
+        ("TAB" . corfu-next)
+        ([tab] . corfu-next)
+        ("S-TAB" . corfu-previous)
+        ([backtab] . corfu-previous))
+  :init
+  (global-corfu-mode)
+  (corfu-history-mode)
+  (corfu-indexed-mode)
+  (add-to-list 'savehist-additional-variables 'corfu-history))
+
+(use-package emacs
+  :ensure nil
+  :custom
+  ;; TAB cycle if there are only few candidates
+  ;; (completion-cycle-threshold 3)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (tab-always-indent 'complete))
+
+(use-package nerd-icons-corfu
+  :after corfu
+  :config
+  (add-to-list 'corfu-margin-formatters #'nerd-icons-corfu-formatter))
+
+;; Use Dabbrev with Corfu!
+(use-package dabbrev
+  :ensure nil
+  ;; Swap M-/ and C-M-/
+  :bind (("M-/" . dabbrev-completion)
+         ("C-M-/" . dabbrev-expand))
+  :config
+  (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
+  ;; Since 29.1, use `dabbrev-ignored-buffer-regexps' on older.
+  (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode))
 
 (use-package
- cape
- :defer t
- :init
- (add-to-list 'completion-at-point-functions #'cape-file)
- (add-to-list 'completion-at-point-functions #'cape-dabbrev)
- (add-to-list 'completion-at-point-functions #'cape-keyword) ; programming language keyword
- (add-to-list 'completion-at-point-functions #'cape-dict)
- (add-to-list 'completion-at-point-functions #'cape-elisp-symbol) ; elisp symbol
- (add-to-list 'completion-at-point-functions #'cape-elisp-block)
- (add-to-list 'completion-at-point-functions #'cape-line)
- (add-hook 'completion-at-point-functions #'cape-history)
- :config (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
+  cape
+  :defer t
+  :bind ("C-c p" . cape-prefix-map)
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  ;(add-to-list 'completion-at-point-functions #'cape-abbrev)
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-keyword) ; programming language keyword
+  (add-to-list 'completion-at-point-functions #'cape-dict)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-symbol) ; elisp symbol
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+  ;(add-to-list 'completion-at-point-functions #'cape-line)
+  (add-hook 'completion-at-point-functions #'cape-emoji)
+  (add-hook 'completion-at-point-functions #'cape-tex)
+  (add-hook 'completion-at-point-functions #'cape-history)
+  :config
+  (advice-add 'pcomplete-completions-at-point :around #'cape-wrap-purify))
+
+(use-package yasnippet-capf
+  :after cape yasnippet
+  :config
+  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
 (use-package yasnippet :defer t
   :hook (prog-mode . yas-minor-mode))

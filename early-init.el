@@ -33,6 +33,11 @@
 
 (cd "~")
 
+(setenv "LSP_USE_PLISTS" "true")
+
+;; Increase the amount of data which Emacs reads from the process
+(setq read-process-output-max (* 1024 1024))
+
 ; custom.el
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)

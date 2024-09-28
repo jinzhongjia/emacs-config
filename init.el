@@ -87,7 +87,6 @@
 (defvar cabins--os-win (memq system-type '(ms-dos windows-nt cygwin)))
 (defvar cabins--os-mac (eq system-type 'darwin))
 
-
 (when (and cabins--os-win
   	       (boundp 'w32-get-true-file-attributes))
   (setq w32-get-true-file-attributes nil
