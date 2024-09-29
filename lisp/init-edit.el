@@ -34,7 +34,6 @@
 
 (use-package indent-bars
   :ensure (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
-  :disabled t
   :hook (prog-mode . indent-bars-mode))
 
 (use-package symbol-overlay :defer t :hook (prog-mode . symbol-overlay-mode))

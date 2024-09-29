@@ -3,6 +3,8 @@
 
 ;;; Code:
 
+(setq elpaca-core-date '(20240924))
+
 (defvar elpaca-installer-version 0.7)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))

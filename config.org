@@ -99,6 +99,7 @@
 - [[#init-lspel][init-lsp.el]]
   - [[#init-lspel-文件头][init-lsp.el 文件头]]
   - [[#lsp-mode][lsp-mode]]
+  - [[#lsp-pyright][lsp-pyright]]
   - [[#lsp-bridge-配置][lsp-bridge 配置]]
   - [[#init-lspel-文件尾][init-lsp.el 文件尾]]
 - [[#init-treesitterel][init-treesitter.el]]
@@ -118,6 +119,7 @@
   - [[#init-blogel-文件尾][init-blog.el 文件尾]]
 - [[#init-aiel][init-ai.el]]
   - [[#init-aiel-文件头][init-ai.el 文件头]]
+  - [[#copilot][copilot]]
   - [[#copilot-chat][copilot-chat]]
   - [[#init-aiel-文件尾][init-ai.el 文件尾]]
 
@@ -202,6 +204,10 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 ** 使用 ~elpaca~ 作为包管理器
 
 [[https://github.com/progfolio/elpaca][elpaca]] 是一款更加现代化的 GUI Emacs 包管理器，它拥有着相较于 straight.el
+
+#+begin_src emacs-lisp
+  (setq elpaca-core-date '(20240924))  
+#+end_src
 
 以下源自官方的安装指南：
 
@@ -771,7 +777,6 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 #+begin_src emacs-lisp
   (use-package indent-bars
     :ensure (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
-    :disabled t
     :hook (prog-mode . indent-bars-mode))
 #+end_src
 
@@ -847,6 +852,8 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 #+end_src
 
 ** rime
+
+[[https://github.com/DogLooksGood/emacs-rime][emacs-rime]]，emacs rime 模块，让 emacs 本身支持使用 rime。
 
 #+begin_src emacs-lisp
   (use-package rime
@@ -1553,7 +1560,6 @@ consult 的 git 扩展
     :init
     (global-corfu-mode)
     (corfu-history-mode)
-    (corfu-indexed-mode)
     (add-to-list 'savehist-additional-variables 'corfu-history))
 #+END_SRC
 
@@ -1990,6 +1996,8 @@ lsp 配置，目前主流的 ~lsp client~ 也就是 ~lsp-mode~ ~eglot~ ~lsp-brid
     :custom
     (lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
     (lsp-idle-delay 0.500)
+    ;; 这会禁用掉某些无用的东西
+    (lsp-completion-provider :none)
     :hook (prog-mode . lsp-deferred))
 #+end_src
 
@@ -1999,6 +2007,19 @@ lsp 配置，目前主流的 ~lsp client~ 也就是 ~lsp-mode~ ~eglot~ ~lsp-brid
 
 #+begin_src emacs-lisp
   (use-package lsp-ui :commands lsp-ui-mode)
+#+end_src
+
+** lsp-pyright
+
+添加 lsp-pyright 支持，[[https://emacs-lsp.github.io/lsp-pyright/][lsp-pyright]]
+
+可以使用 pyright 和 basedpytight
+
+#+begin_src emacs-lisp
+  (use-package lsp-pyright
+    :hook (python-mode . (lambda ()
+                           (require 'lsp-pyright)
+                           (lsp))))  ; or lsp-deferred
 #+end_src
 
 ** lsp-bridge 配置
@@ -2247,6 +2268,38 @@ highlight-defined
 ;;; Code:
 
 #+END_SRC
+
+** copilot
+
+[[https://github.com/copilot-emacs/copilot.el][copilot]]，copilot 支持
+
+#+begin_src emacs-lisp
+  (use-package copilot
+    :ensure (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+    :hook (prog-mode . copilot-mode)
+    :bind
+    (("C-c n" . copilot-next-completion)
+     ("C-c p" . copilot-previous-completion)
+     ("C-c w" . copilot-accept-completion-by-word)
+     ("C-c l" . copilot-accept-completion-by-line)
+     ("C-c RET" . rk/copilot-complete-or-accept))
+    :config
+    (defun rk/copilot-complete-or-accept ()
+      "Command that either triggers a completion or accepts one if one
+  is available. Useful if you tend to hammer your keys like I do."
+      (interactive)
+      (if (copilot--overlay-visible)
+          (progn
+            (copilot-accept-completion)
+            (open-line 1)
+            (next-line))
+        (copilot-complete)))
+    (add-to-list 'copilot-indentation-alist '(prog-mode 2))
+    (add-to-list 'copilot-indentation-alist '(org-mode 2))
+    (add-to-list 'copilot-indentation-alist '(text-mode 2))
+    (add-to-list 'copilot-indentation-alist '(closure-mode 2))
+    (add-to-list 'copilot-indentation-alist '(emacs-lisp-mode 2)))
+#+end_src
 
 ** copilot-chat
 

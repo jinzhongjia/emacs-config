@@ -213,7 +213,6 @@
   :init
   (global-corfu-mode)
   (corfu-history-mode)
-  (corfu-indexed-mode)
   (add-to-list 'savehist-additional-variables 'corfu-history))
 
 (use-package emacs

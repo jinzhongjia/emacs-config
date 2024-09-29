@@ -8,9 +8,16 @@
   :custom
   (lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
   (lsp-idle-delay 0.500)
+  ;; 这会禁用掉某些无用的东西
+  (lsp-completion-provider :none)
   :hook (prog-mode . lsp-deferred))
 
 (use-package lsp-ui :commands lsp-ui-mode)
+
+(use-package lsp-pyright
+  :hook (python-mode . (lambda ()
+                         (require 'lsp-pyright)
+                         (lsp))))  ; or lsp-deferred
 
 (use-package
   lsp-bridge
