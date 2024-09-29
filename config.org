@@ -311,6 +311,8 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     (setq w32-get-true-file-attributes nil
     	    w32-pipe-read-delay 0
     	    w32-pipe-buffer-size (* 64 1024)))
+
+  (setq text-quoting-style 'straight)
 #+end_src
 
 ** 加载其他的模块
@@ -2276,7 +2278,6 @@ highlight-defined
 #+begin_src emacs-lisp
   (use-package copilot
     :ensure (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-    :hook (prog-mode . copilot-mode)
     :bind
     (("C-c n" . copilot-next-completion)
      ("C-c p" . copilot-previous-completion)

@@ -5,7 +5,6 @@
 
 (use-package copilot
   :ensure (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :hook (prog-mode . copilot-mode)
   :bind
   (("C-c n" . copilot-next-completion)
    ("C-c p" . copilot-previous-completion)

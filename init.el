@@ -95,6 +95,8 @@
   	    w32-pipe-read-delay 0
   	    w32-pipe-buffer-size (* 64 1024)))
 
+(setq text-quoting-style 'straight)
+
 ;; 将lisp目录放到加载路径的前面以加快启动速度
 (let ((dir (locate-user-emacs-file "lisp")))
   (add-to-list 'load-path (file-name-as-directory dir)))
