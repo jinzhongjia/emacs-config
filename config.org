@@ -2000,7 +2000,9 @@ lsp 配置，目前主流的 ~lsp client~ 也就是 ~lsp-mode~ ~eglot~ ~lsp-brid
     (lsp-idle-delay 0.500)
     ;; 这会禁用掉某些无用的东西
     (lsp-completion-provider :none)
-    :hook (prog-mode . lsp-deferred))
+    :hook ((prog-mode . (lambda ()
+                          (unless (or (derived-mode-p 'lisp-mode 'emacs-lisp-mode))
+                            (lsp-deferred))))))
 #+end_src
 
 *** lsp-ui

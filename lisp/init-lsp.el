@@ -10,7 +10,9 @@
   (lsp-idle-delay 0.500)
   ;; 这会禁用掉某些无用的东西
   (lsp-completion-provider :none)
-  :hook (prog-mode . lsp-deferred))
+  :hook ((prog-mode . (lambda ()
+                        (unless (or (derived-mode-p 'lisp-mode 'emacs-lisp-mode))
+                          (lsp-deferred))))))
 
 (use-package lsp-ui :commands lsp-ui-mode)
 
