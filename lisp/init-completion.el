@@ -268,7 +268,8 @@
   (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
 (use-package yasnippet :defer t
-  :hook (prog-mode . yas-minor-mode))
+  :config
+  (yas-global-mode 1))
 
 (use-package
  doom-snippets
@@ -281,7 +282,7 @@
  :after yasnippet)
 
 ;; 再装一个通用模板库，省得没 template 用
-(use-package yasnippet-snippets :after (yasnippet))
+(use-package yasnippet-snippets :after yasnippet)
 
 (provide 'init-completion)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
