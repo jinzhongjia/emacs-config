@@ -94,7 +94,6 @@
   - [[#mwin][mwin]]
   - [[#ace-window-窗口导航][ace-window 窗口导航]]
   - [[#helpful帮助增强][helpful帮助增强]]
-  - [[#dirvish][dirvish]]
   - [[#init-toolsel-文件尾][init-tools.el 文件尾]]
 - [[#init-lspel][init-lsp.el]]
   - [[#init-lspel-文件头][init-lsp.el 文件头]]
@@ -205,10 +204,6 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 
 [[https://github.com/progfolio/elpaca][elpaca]] 是一款更加现代化的 GUI Emacs 包管理器，它拥有着相较于 straight.el
 
-#+begin_src emacs-lisp
-  (setq elpaca-core-date '(20240924))  
-#+end_src
-
 以下源自官方的安装指南：
 
 #+BEGIN_SRC emacs-lisp
@@ -292,13 +287,17 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 设置 ~use-package~ 自动安装包，然后启用 ~elpaca-use-package-mode~
 
 #+BEGIN_SRC emacs-lisp
-  (setq use-package-always-ensure t)
-
   (elpaca
-   elpaca-use-package
-   ;; Enable use-package :ensure support for Elpaca.
-   (elpaca-use-package-mode))
+      elpaca-use-package
+    ;; Enable use-package :ensure support for Elpaca.
+    (elpaca-use-package-mode))
 #+END_SRC
+
+使得 ~use-package~ 默认自动安装所有包
+
+#+begin_src emacs-lisp
+  (setq use-package-always-ensure t)
+#+end_src
 
 ** 定义几个变量
 
@@ -1877,8 +1876,8 @@ windows 粘贴函数
 
 #+begin_src emacs-lisp
   (when (eq system-type 'windows-nt)
-    (setq explicit-shell-file-name "pwsh")
-    (setq explicit-pwsh-args '("-NoLogo")))
+    (if (executable-find "pwsh")
+        (setq explicit-shell-file-name "pwsh")))
 #+end_src
 
 ** crux
@@ -1934,31 +1933,6 @@ windows 粘贴函数
            ("C-h x" . helpful-command)
            ([remap describe-key] . helpful-key))
     )
-#+end_src
-
-** dirvish
-
-#+begin_src emacs-lisp
-  (use-package dirvish
-    :hook (after-init . dirvish-override-dired-mode)
-    :bind (:map dired-mode-map
-           ("TAB" . dirvish-toggle-subtree)
-           ("SPC" . dirvish-show-history)
-           ("*"   . dirvish-mark-menu)
-           ("r"   . dirvish-roam)
-           ("b"   . dirvish-goto-bookmark)
-           ("f"   . dirvish-file-info-menu)
-           ("M-n" . dirvish-go-forward-history)
-           ("M-p" . dirvish-go-backward-history)
-           ("M-s" . dirvish-setup-menu)
-           ("M-f" . dirvish-toggle-fullscreen)
-           ([remap dired-sort-toggle-or-edit] . dirvish-quicksort)
-           ([remap dired-do-redisplay] . dirvish-ls-switches-menu)
-           ([remap dired-summary] . dirvish-dispatch)
-           ([remap dired-do-copy] . dirvish-yank-menu)
-           ([remap mode-line-other-buffer] . dirvish-other-buffer))
-    :config
-    (dirvish-peek-mode))
 #+end_src
 
 ** init-tools.el 文件尾
@@ -2050,6 +2024,8 @@ lsp-bridge 的优势：
 - ~six~
 - ~setuptools~
 - ~rapidfuzz~
+
+当前该插件处于关闭状态
    
 #+begin_src emacs-lisp
   (use-package

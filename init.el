@@ -3,8 +3,6 @@
 
 ;;; Code:
 
-(setq elpaca-core-date '(20240924))
-
 (defvar elpaca-installer-version 0.7)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -79,12 +77,12 @@
   (setq elpaca-queue-limit 10)
   (elpaca-no-symlink-mode))
 
-(setq use-package-always-ensure t)
-
 (elpaca
- elpaca-use-package
- ;; Enable use-package :ensure support for Elpaca.
- (elpaca-use-package-mode))
+    elpaca-use-package
+  ;; Enable use-package :ensure support for Elpaca.
+  (elpaca-use-package-mode))
+
+(setq use-package-always-ensure t)
 
 (defvar cabins--os-win (memq system-type '(ms-dos windows-nt cygwin)))
 (defvar cabins--os-mac (eq system-type 'darwin))
