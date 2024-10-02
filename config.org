@@ -1583,6 +1583,16 @@ consult 的 git 扩展
                 ([remap xref-find-apropos] . consult-lsp-symbols)))
 #+end_src
 
+*** consult-gh
+
+[[https://github.com/armindarvish/consult-gh][consult-gh]]，为 consult 添加 github cli 支持
+
+#+begin_src emacs-lisp
+  (use-package consult-gh
+    :if (executable-find "gh")
+    :after consult)
+#+end_src
+
 ** corfu 补全框架
 
 [[https://github.com/minad/corfu][corfu]] 是一个补全框架，相较于 ~company~ 更加现代化

@@ -200,6 +200,10 @@
   :bind (:map lsp-mode-map
               ([remap xref-find-apropos] . consult-lsp-symbols)))
 
+(use-package consult-gh
+  :if (executable-find "gh")
+  :after consult)
+
 (use-package corfu
   :defer t
   :after savehist
