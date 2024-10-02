@@ -97,6 +97,7 @@
   - [[#mwin][mwin]]
   - [[#ace-window-窗口导航][ace-window 窗口导航]]
   - [[#helpful帮助增强][helpful帮助增强]]
+  - [[#projectile][projectile]]
   - [[#init-toolsel-文件尾][init-tools.el 文件尾]]
 - [[#init-lspel][init-lsp.el]]
   - [[#init-lspel-文件头][init-lsp.el 文件头]]
@@ -718,6 +719,13 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
   (use-package treemacs-icons-dired
     :hook (dired-mode . treemacs-icons-dired-enable-once)
     :ensure t)
+#+end_src
+
+*** treemacs-projectile
+
+#+begin_src emacs-lisp
+  (use-package treemacs-projectile
+    :after (treemacs projectile))
 #+end_src
 
 ** init-ui.el 文件尾
@@ -1996,8 +2004,19 @@ windows 粘贴函数
            ("C-h v" . helpful-variable)
            ("C-c C-d" . heloful-at-point)
            ("C-h x" . helpful-command)
-           ([remap describe-key] . helpful-key))
-    )
+           ([remap describe-key] . helpful-key)))
+#+end_src
+
+** projectile
+
+[[https://projectile.mx/][projectile]]，Emacs 的项目导航和管理库
+
+#+begin_src emacs-lisp
+  (use-package projectile
+    :init
+    (projectile-mode +1)
+    :bind (:map projectile-mode-map
+                ("C-c p" . projectile-command-map)))
 #+end_src
 
 ** init-tools.el 文件尾

@@ -270,6 +270,9 @@
   :hook (dired-mode . treemacs-icons-dired-enable-once)
   :ensure t)
 
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+
 (provide 'init-ui)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; init-ui.el ends here

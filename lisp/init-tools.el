@@ -99,8 +99,13 @@
          ("C-h v" . helpful-variable)
          ("C-c C-d" . heloful-at-point)
          ("C-h x" . helpful-command)
-         ([remap describe-key] . helpful-key))
-  )
+         ([remap describe-key] . helpful-key)))
+
+(use-package projectile
+  :init
+  (projectile-mode +1)
+  :bind (:map projectile-mode-map
+              ("C-c p" . projectile-command-map)))
 
 (provide 'init-tools)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
