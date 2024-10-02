@@ -224,6 +224,9 @@
 (use-package org-fragtog
   :hook (org-mode . org-fragtog-mode))
 
+(use-package org-roam
+  :after org)
+
 (provide 'init-org)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; init-org.el ends here

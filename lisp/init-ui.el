@@ -244,15 +244,29 @@
 (use-package nerd-icons
   :defer t)
 
-(use-package nerd-icons-dired
-  :after nerd-icons
-  :hook
-  (dired-mode . nerd-icons-dired-mode))
-
 (use-package diredfl
   :hook (dired-mode . diredfl-mode))
 
 (setq dired-listing-switches "-alh --group-directories-first")
+
+(use-package treemacs
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t d"   . treemacs-select-directory)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
+(use-package treemacs-icons-dired
+  :hook (dired-mode . treemacs-icons-dired-enable-once)
+  :ensure t)
 
 (provide 'init-ui)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

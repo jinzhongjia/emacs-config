@@ -16,6 +16,9 @@
 
 (use-package magit-delta :hook (magit-mode . magit-delta-mode))
 
+(use-package treemacs-magit
+  :after (treemacs magit))
+
 (use-package emsg-blame
   :ensure
   '(emsg-blame

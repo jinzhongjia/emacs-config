@@ -195,6 +195,11 @@
 (use-package consult-yasnippet
   :after consult)
 
+(use-package consult-lsp
+  :after lsp consult
+  :bind (:map lsp-mode-map
+              ([remap xref-find-apropos] . consult-lsp-symbols)))
+
 (use-package corfu
   :defer t
   :after savehist

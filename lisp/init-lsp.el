@@ -16,6 +16,11 @@
 
 (use-package lsp-ui :commands lsp-ui-mode)
 
+(use-package lsp-treemacs
+  :after treemacs lsp-mode
+  :config
+  (lsp-treemacs-sync-mode 1))
+
 (use-package lsp-pyright
   :hook (python-mode . (lambda ()
                          (require 'lsp-pyright)

@@ -24,6 +24,7 @@
   - [[#nerd-font][nerd-font]]
   - [[#diredfl][diredfl]]
   - [[#dired-配置][dired 配置]]
+  - [[#treemacs][treemacs]]
   - [[#init-uiel-文件尾][init-ui.el 文件尾]]
 - [[#init-editel][init-edit.el]]
   - [[#init-editel-文件头][init-edit.el 文件头]]
@@ -57,6 +58,7 @@
   - [[#ox-gfm-导出为-markdown][ox-gfm 导出为 markdown]]
   - [[#org-margin-突出显示标题][org-margin 突出显示标题]]
   - [[#org-fragtog-自动切换-latex-渲染][org-fragtog 自动切换 latex 渲染]]
+  - [[#org-roam][org-roam]]
   - [[#init-orgel-文件尾][init-org.el 文件尾]]
 - [[#init-mdel][init-md.el]]
   - [[#init-mdel-文件头][init-md.el 文件头]]
@@ -82,6 +84,7 @@
   - [[#magit-todo][magit-todo]]
   - [[#diff-hl-高亮显示修改的部分][diff-hl 高亮显示修改的部分]]
   - [[#magit-delta-增强-git-diff][magit-delta 增强 ~git diff~]]
+  - [[#treemacs-magit][treemacs-magit]]
   - [[#emsg-blame][emsg-blame]]
   - [[#init-devel-文件尾][init-dev.el 文件尾]]
 - [[#init-toolsel][init-tools.el]]
@@ -671,15 +674,6 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     :defer t)
 #+end_src
 
-*** nerd-icons-dired
-
-#+begin_src emacs-lisp
-  (use-package nerd-icons-dired
-    :after nerd-icons
-    :hook
-    (dired-mode . nerd-icons-dired-mode))
-#+end_src
-
 ** diredfl
 
 #+begin_src emacs-lisp
@@ -693,6 +687,35 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 
 #+begin_src emacs-lisp
   (setq dired-listing-switches "-alh --group-directories-first")
+#+end_src
+
+** treemacs
+
+更牛逼的文件管理器
+
+#+begin_src emacs-lisp
+  (use-package treemacs
+    :defer t
+    :init
+    (with-eval-after-load 'winum
+      (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+    :bind
+    (:map global-map
+          ("M-0"       . treemacs-select-window)
+          ("C-x t 1"   . treemacs-delete-other-windows)
+          ("C-x t t"   . treemacs)
+          ("C-x t d"   . treemacs-select-directory)
+          ("C-x t B"   . treemacs-bookmark)
+          ("C-x t C-t" . treemacs-find-file)
+          ("C-x t M-t" . treemacs-find-tag)))
+#+end_src
+
+*** treemacs-icons-dired
+
+#+begin_src emacs-lisp
+  (use-package treemacs-icons-dired
+    :hook (dired-mode . treemacs-icons-dired-enable-once)
+    :ensure t)
 #+end_src
 
 ** init-ui.el 文件尾
@@ -1209,6 +1232,15 @@ org 导出 pdf，首先需要保证已经安装了 latex 相关环境，并且�
     :hook (org-mode . org-fragtog-mode))
 #+end_src
 
+** org-roam
+
+org-roam 知识管理系统
+
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :after org)
+#+end_src
+
 ** init-org.el 文件尾
 
 #+BEGIN_SRC emacs-lisp
@@ -1538,6 +1570,17 @@ consult 的 git 扩展
       :after consult)
 #+end_src
 
+*** consult lsp
+
+[[https://github.com/gagbo/consult-lsp][consult-lsp]]，给 consult 增加 lsp 支持
+
+#+begin_src emacs-lisp
+  (use-package consult-lsp
+    :after lsp consult
+    :bind (:map lsp-mode-map
+                ([remap xref-find-apropos] . consult-lsp-symbols)))
+#+end_src
+
 ** corfu 补全框架
 
 [[https://github.com/minad/corfu][corfu]] 是一个补全框架，相较于 ~company~ 更加现代化
@@ -1728,6 +1771,15 @@ consult 的 git 扩展
 #+BEGIN_SRC emacs-lisp
   (use-package magit-delta :hook (magit-mode . magit-delta-mode))
 #+END_SRC
+
+** treemacs-magit
+
+为 treemacs 添加 magit 支持
+
+#+begin_src emacs-lisp
+  (use-package treemacs-magit
+    :after (treemacs magit))
+#+end_src
 
 ** emsg-blame
 
@@ -1986,6 +2038,17 @@ lsp 配置，目前主流的 ~lsp client~ 也就是 ~lsp-mode~ ~eglot~ ~lsp-brid
 
 #+begin_src emacs-lisp
   (use-package lsp-ui :commands lsp-ui-mode)
+#+end_src
+
+*** lsp-treemacs
+
+[[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]]，将 lsp-mode 集成到 treemacs 中
+
+#+begin_src emacs-lisp
+  (use-package lsp-treemacs
+    :after treemacs lsp-mode
+    :config
+    (lsp-treemacs-sync-mode 1))
 #+end_src
 
 ** lsp-pyright
@@ -2292,6 +2355,7 @@ highlight-defined
     (copilot-chat-curl-program "curl")
     :after (request org))
 #+end_src
+
 ** init-ai.el 文件尾
 
 #+BEGIN_SRC emacs-lisp
