@@ -254,6 +254,8 @@
   :init
   (with-eval-after-load 'winum
     (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :custom
+  (treemacs-default-visit-action 'treemacs-visit-node-close-treemacs "close treemacs after opening file")
   :bind
   (:map global-map
         ("M-0"       . treemacs-select-window)

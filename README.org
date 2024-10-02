@@ -21,7 +21,6 @@
 - ~fd~
 - ~latex~
 - ~git~
-- ~python~
 - ~delta~
 - librime
 
@@ -29,17 +28,6 @@
 
 - Maple Mono SC NF
 - 鹜霞文楷
-- 需要额外安装nerd font插件的字体
-
-以下是 python 依赖：
-
-~lsp-bridge~ 需要：
-- ~epc~
-- ~orjson~
-- ~sexpdata~
-- ~six~
-- ~setuptools~
-- ~rapidfuzz~
 
 ** 安装
 
@@ -62,4 +50,4 @@ Windows:
 ** 截图
 
 #+ATTR_ORG: :width 1500
-[[file:image/image_20240821_164156.png]]
+[[file:image/image_20241002_235516.png]]
