@@ -39,3 +39,4 @@ rime/installation.yaml
 rime/aurora_pinyin.dict.yaml
 rime/aurora_pinyin.schema.yaml
 rime/default.custom.yaml
+tree-sitter

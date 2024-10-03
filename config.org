@@ -115,6 +115,7 @@
   - [[#zig-mode-for-ziglang][zig-mode for ziglang]]
   - [[#elisp-lang][elisp lang]]
   - [[#nix-mode-for-nixlang][nix-mode for nixlang]]
+  - [[#rust-mode][rust-mode]]
   - [[#init-langel-文件尾][init-lang.el 文件尾]]
 - [[#init-blogel][init-blog.el]]
   - [[#init-blogel-文件头][init-blog.el 文件头]]
@@ -2179,14 +2180,14 @@ lsp-bridge 的优势：
 ~treesit-auto~ 是一个自动安装 treesitter 的插件，但是需要对应的 lang 有相应的 ~ts-mode~ 。
 
 #+begin_src emacs-lisp
-  (use-package
-   treesit-auto
-   :defer t
-   :custom (treesit-auto-install 'prompt)
-   :config
-   (treesit-auto-add-to-auto-mode-alist 'all)
-   (global-treesit-auto-mode)
-   (treesit-auto-add-to-auto-mode-alist))
+  (use-package treesit-auto
+    :custom
+    (treesit-auto-install 'prompt)
+    (treesit-auto-install t)
+    (treesit-font-lock-level 4)
+    :config
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode))
 #+end_src
 
 ** ts-fold
@@ -2252,6 +2253,30 @@ highlight-defined
   (use-package nix-mode
     :if (not (eq system-type 'windows-nt))
     :mode "\\.nix\\'")
+#+end_src
+
+** rust-mode
+
+[[https://github.com/rust-lang/rust-mode][rust-mode]]，官方维护的 rust-mode
+
+#+begin_src emacs-lisp
+  (use-package rust-mode
+    :defer t
+    :init
+    (setq rust-mode-treesitter-derive t)
+    :hook
+    (rust-mode . (lambda () (prettify-symbols-mode))))
+#+end_src
+
+*** rustic
+
+#+begin_src emacs-lisp
+  (use-package rustic
+    :after (rust-mode)
+    :config
+    (setq rustic-format-on-save nil)
+    :custom
+    (rustic-cargo-use-last-stored-arguments t))
 #+end_src
 
 ** init-lang.el 文件尾

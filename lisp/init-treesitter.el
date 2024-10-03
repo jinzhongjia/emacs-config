@@ -3,14 +3,14 @@
 
 ;;; Code:
 
-(use-package
- treesit-auto
- :defer t
- :custom (treesit-auto-install 'prompt)
- :config
- (treesit-auto-add-to-auto-mode-alist 'all)
- (global-treesit-auto-mode)
- (treesit-auto-add-to-auto-mode-alist))
+(use-package treesit-auto
+  :custom
+  (treesit-auto-install 'prompt)
+  (treesit-auto-install t)
+  (treesit-font-lock-level 4)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 
 (use-package ts-fold
   :defer t
