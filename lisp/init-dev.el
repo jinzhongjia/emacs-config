@@ -14,7 +14,14 @@
 
 (use-package diff-hl :defer t :init (global-diff-hl-mode t))
 
-(use-package magit-delta :hook (magit-mode . magit-delta-mode))
+(use-package magit-delta
+  :hook (magit-mode . magit-delta-mode))
+
+(use-package magit-file-icons
+  :ensure t
+  :after magit
+  :init
+  (magit-file-icons-mode 1))
 
 (use-package treemacs-magit
   :after (treemacs magit))

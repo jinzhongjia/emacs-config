@@ -84,6 +84,7 @@
   - [[#magit-todo][magit-todo]]
   - [[#diff-hl-高亮显示修改的部分][diff-hl 高亮显示修改的部分]]
   - [[#magit-delta-增强-git-diff][magit-delta 增强 ~git diff~]]
+  - [[#magit-file-icons][magit-file-icons]]
   - [[#treemacs-magit][treemacs-magit]]
   - [[#emsg-blame][emsg-blame]]
   - [[#init-devel-文件尾][init-dev.el 文件尾]]
@@ -112,6 +113,9 @@
   - [[#init-treesitterel-文件尾][init-treesitter.el 文件尾]]
 - [[#init-langel][init-lang.el]]
   - [[#init-langel-文件头][init-lang.el 文件头]]
+  - [[#web-mode][web-mode]]
+  - [[#lua-mode][lua-mode]]
+  - [[#go-mode][go-mode]]
   - [[#zig-mode-for-ziglang][zig-mode for ziglang]]
   - [[#elisp-lang][elisp lang]]
   - [[#nix-mode-for-nixlang][nix-mode for nixlang]]
@@ -1802,8 +1806,21 @@ consult 的 git 扩展
 [[https://github.com/dandavison/magit-delta][magit-delta]] 插件可以通过 =git-delta= 来更优化的方式显示diff内容（需要提前安装 =git-delta= ）。
 
 #+BEGIN_SRC emacs-lisp
-  (use-package magit-delta :hook (magit-mode . magit-delta-mode))
+  (use-package magit-delta
+    :hook (magit-mode . magit-delta-mode))
 #+END_SRC
+
+** magit-file-icons
+
+[[https://github.com/gekoke/magit-file-icons][magit-file-icons]]，为 magit 集成 文件图标
+
+#+begin_src emacs-lisp
+  (use-package magit-file-icons
+    :ensure t
+    :after magit
+    :init
+    (magit-file-icons-mode 1))
+#+end_src
 
 ** treemacs-magit
 
@@ -2223,6 +2240,47 @@ lsp-bridge 的优势：
 ;;; Code:
 
 #+END_SRC
+
+** web-mode
+
+[[https://web-mode.org/][web-mode]]，增加前端支持
+
+#+begin_src emacs-lisp
+  (use-package web-mode
+    :mode
+    (("\\.phtml\\'" . web-mode)
+     ("\\.php\\'" . web-mode)
+     ("\\.tpl\\'" . web-mode)
+     ("\\.[agj]sp\\'" . web-mode)
+     ("\\.as[cp]x\\'" . web-mode)
+     ("\\.erb\\'" . web-mode)
+     ("\\.mustache\\'" . web-mode)
+     ("\\.djhtml\\'" . web-mode)))
+#+end_src
+
+*** vue-mode
+
+[[https://github.com/AdamNiederer/vue-mode][vue-mode]]，增加 vue 支持
+
+#+begin_src emacs-lisp
+  (use-package vue-mode)
+#+end_src
+
+** lua-mode
+
+[[https://github.com/immerrr/lua-mode][lua-mode]]，增加 lua 支持
+
+#+begin_src emacs-lisp
+  (use-package lua-mode)
+#+end_src
+
+** go-mode
+
+[[https://github.com/dominikh/go-mode.el][go-mode]]，增加 go 支持
+
+#+begin_src emacs-lisp
+  (use-package go-mode)
+#+end_src
 
 ** zig-mode for ziglang
 

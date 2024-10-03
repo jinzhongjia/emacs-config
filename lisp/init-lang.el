@@ -3,6 +3,23 @@
 
 ;;; Code:
 
+(use-package web-mode
+  :mode
+  (("\\.phtml\\'" . web-mode)
+   ("\\.php\\'" . web-mode)
+   ("\\.tpl\\'" . web-mode)
+   ("\\.[agj]sp\\'" . web-mode)
+   ("\\.as[cp]x\\'" . web-mode)
+   ("\\.erb\\'" . web-mode)
+   ("\\.mustache\\'" . web-mode)
+   ("\\.djhtml\\'" . web-mode)))
+
+(use-package vue-mode)
+
+(use-package lua-mode)
+
+(use-package go-mode)
+
 (use-package
  zig-mode
  :defer t
