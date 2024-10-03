@@ -54,7 +54,16 @@
   :defer t
   :ensure nil
   :init (recentf-mode)
-  :custom (recentf-max-saved-items 300))
+  :custom
+  (recentf-max-saved-items 300)
+  (recentf-exclude
+   '("treemacs-persist"
+     ;; 排除 ~/.emacs.d/ 目录下除了 readme.org 和 config.org 之外的所有文件
+     (lambda (file)
+       (and (string-match-p "^~/.emacs.d/" file)
+            (not (string-match-p "\\(?:[Rr][Ee][Aa][Dd][Mm][Ee]\\.org\\|config\\.org\\)$" file))))
+     ".org-registry.el"
+     )))
 
 (use-package olivetti
   :hook ((org-mode . olivetti-mode)

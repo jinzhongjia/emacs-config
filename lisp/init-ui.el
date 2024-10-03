@@ -242,6 +242,8 @@
  (doom-modeline-enable-word-count t))
 
 (use-package nerd-icons
+  :custom
+  (nerd-icons-font-family "Maple Mono SC NF")
   :defer t)
 
 (use-package diredfl

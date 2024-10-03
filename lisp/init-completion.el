@@ -91,6 +91,7 @@
 
 (use-package
   consult
+  :demand t
   :bind
   ( ;; C-c bindings in `mode-specific-map'
    ("C-c M-x" . consult-mode-command)

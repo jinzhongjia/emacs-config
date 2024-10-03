@@ -672,6 +672,8 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 
 #+begin_src emacs-lisp
   (use-package nerd-icons
+    :custom
+    (nerd-icons-font-family "Maple Mono SC NF")
     :defer t)
 #+end_src
 
@@ -861,7 +863,16 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     :defer t
     :ensure nil
     :init (recentf-mode)
-    :custom (recentf-max-saved-items 300))
+    :custom
+    (recentf-max-saved-items 300)
+    (recentf-exclude
+     '("treemacs-persist"
+       ;; 排除 ~/.emacs.d/ 目录下除了 readme.org 和 config.org 之外的所有文件
+       (lambda (file)
+         (and (string-match-p "^~/.emacs.d/" file)
+              (not (string-match-p "\\(?:[Rr][Ee][Aa][Dd][Mm][Ee]\\.org\\|config\\.org\\)$" file))))
+       ".org-registry.el"
+       )))
 #+end_src
 
 ** olivetti 次要模式自动平衡窗口边距
@@ -1449,6 +1460,7 @@ Emacs 的次要模式，聪明地处理括号。
 #+BEGIN_SRC emacs-lisp
   (use-package
     consult
+    :demand t
     :bind
     ( ;; C-c bindings in `mode-specific-map'
      ("C-c M-x" . consult-mode-command)
