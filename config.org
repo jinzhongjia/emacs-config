@@ -32,6 +32,7 @@
   - [[#emacs备份设置][Emacs备份设置]]
   - [[#解除一些不常用的快捷键][解除一些不常用的快捷键]]
   - [[#自动重载设置][自动重载设置]]
+  - [[#拼写检查][拼写检查]]
   - [[#indent-bar][indent bar]]
   - [[#symbol-overlay][symbol-overlay]]
   - [[#flycheck][flycheck]]
@@ -58,6 +59,7 @@
   - [[#ox-gfm-导出为-markdown][ox-gfm 导出为 markdown]]
   - [[#org-margin-突出显示标题][org-margin 突出显示标题]]
   - [[#org-fragtog-自动切换-latex-渲染][org-fragtog 自动切换 latex 渲染]]
+  - [[#org-capture][org-capture]]
   - [[#org-roam][org-roam]]
   - [[#init-orgel-文件尾][init-org.el 文件尾]]
 - [[#init-mdel][init-md.el]]
@@ -811,6 +813,21 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     (global-auto-revert-non-file-buffers t))
 #+END_SRC
 
+** 拼写检查
+
+#+begin_src emacs-lisp
+  (if (executable-find "aspell")
+      (progn
+        ;; 在这里执行你的指令
+        (setq-default ispell-program-name "aspell")  ;; 或者使用 "hunspell"
+        (setq ispell-dictionary "english")            ;; 设置字典为英语
+        (add-hook 'text-mode-hook 'flyspell-mode)    ;; 在文本模式下启用拼写检查
+        (add-hook 'prog-mode-hook 'flyspell-prog-mode) ;; 在编程模式下启用拼写检查
+
+        )
+    (message "Warning: Aspell is not installed."))
+#+end_src
+
 ** indent bar
 
 使用 [[https://github.com/jdtsmith/indent-bars][indent-bars]] 尝试进行快速的缩进
@@ -907,6 +924,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
 
 #+begin_src emacs-lisp
   (use-package rime
+    :ensure '(rime :type git :host github :repo "DogLooksGood/emacs-rime" :ref "d8c0a99")
     :demand t
     :custom
     (default-input-method "rime")
@@ -963,7 +981,7 @@ org 还是使用最新的比较好！！！
     (org-block-begin-line ((t (:underline t :background unspecified))))
     (org-block-end-line ((t (:overline t :underline nil :background unspecified))))
     ;; 处理掉超链接默认的高亮
-    (org-link ((t (:foreground "inherit" :underline t))))
+    (org-link ((t (:foreground unspecified :underline t))))
     :custom
     ;; 自动开启 indent mode
     (org-startup-indented t)
@@ -1258,7 +1276,19 @@ org 导出 pdf，首先需要保证已经安装了 latex 相关环境，并且�
     :hook (org-mode . org-fragtog-mode))
 #+end_src
 
-** org-roam
+** org-capture
+
+org-capture 是 org-mode 自带的笔记快速捕获功能！
+
+#+begin_src emacs-lisp
+  (use-package org-capture
+    :ensure nil
+    :after org
+    :bind ("C-c c" . org-capture)
+    )
+#+end_src
+
+** TODO org-roam
 
 org-roam 知识管理系统
 
@@ -1692,7 +1722,6 @@ consult 的 git 扩展
   (use-package
     cape
     :defer t
-    :bind ("C-c p" . cape-prefix-map)
     :init
     (add-to-list 'completion-at-point-functions #'cape-file)
     ;(add-to-list 'completion-at-point-functions #'cape-abbrev)
@@ -1851,16 +1880,16 @@ consult 的 git 扩展
   do not both fit in the echo area."
        (let* ((message-log-max nil) ; prevent messages from being logged to *Messages*
               (cur-msg (or (current-message) ""))
-              (blm-msg (format "%s %s %s "
-                               emsg-blame--commit-summary
-                               (propertize emsg-blame--commit-author 'face 'magit-log-author)
-                               (propertize emsg-blame--commit-date 'face 'magit-log-date)))
-              (available-width (max 0 (- (frame-width) (string-width cur-msg) 1)))
-              (blm-msg-width (string-width blm-msg))
-              (padding (max 0 (- available-width blm-msg-width)))
-              (rev-blm-msg (concat (make-string padding ?\s) blm-msg)))
+  	        (blm-msg (format "%s %s %s "
+  			                 emsg-blame--commit-summary
+  			                 (propertize emsg-blame--commit-author 'face 'error)
+  			                 (propertize emsg-blame--commit-date 'face 'warning)))
+  	        (available-width (max 0 (- (frame-width) (string-width cur-msg) 1)))
+  	        (blm-msg-width (string-width blm-msg))
+  	        (padding (max 0 (- available-width blm-msg-width)))
+  	        (rev-blm-msg (concat (make-string padding ?\s) blm-msg)))
          (if (> blm-msg-width available-width)
-             (message blm-msg)
+  	       (message blm-msg)
            (message (concat cur-msg rev-blm-msg))))))
     :config (global-emsg-blame-mode))
 #+end_src

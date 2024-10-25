@@ -21,7 +21,7 @@
   (org-block-begin-line ((t (:underline t :background unspecified))))
   (org-block-end-line ((t (:overline t :underline nil :background unspecified))))
   ;; 处理掉超链接默认的高亮
-  (org-link ((t (:foreground "inherit" :underline t))))
+  (org-link ((t (:foreground unspecified :underline t))))
   :custom
   ;; 自动开启 indent mode
   (org-startup-indented t)
@@ -223,6 +223,12 @@
 
 (use-package org-fragtog
   :hook (org-mode . org-fragtog-mode))
+
+(use-package org-capture
+  :ensure nil
+  :after org
+  :bind ("C-c c" . org-capture)
+  )
 
 (use-package org-roam
   :after org)

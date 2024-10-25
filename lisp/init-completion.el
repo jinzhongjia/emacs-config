@@ -256,7 +256,6 @@
 (use-package
   cape
   :defer t
-  :bind ("C-c p" . cape-prefix-map)
   :init
   (add-to-list 'completion-at-point-functions #'cape-file)
   ;(add-to-list 'completion-at-point-functions #'cape-abbrev)
