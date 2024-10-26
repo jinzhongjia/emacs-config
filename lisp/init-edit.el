@@ -19,30 +19,6 @@
 (global-set-key (kbd "C-x C-z") nil)
 (global-set-key [mouse-2] nil)
 
-(use-package
-  autorevert
-  :defer t
-  :ensure nil
-  :config (global-auto-revert-mode)
-  :custom
-  (auto-revert-interval 10)
-  (auto-revert-avoid-polling t)
-  (auto-revert-verbose nil)
-  (auto-revert-remote-files t)
-  (auto-revert-check-vc-info t)
-  (global-auto-revert-non-file-buffers t))
-
-(if (executable-find "aspell")
-    (progn
-      ;; 在这里执行你的指令
-      (setq-default ispell-program-name "aspell")  ;; 或者使用 "hunspell"
-      (setq ispell-dictionary "english")            ;; 设置字典为英语
-      (add-hook 'text-mode-hook 'flyspell-mode)    ;; 在文本模式下启用拼写检查
-      (add-hook 'prog-mode-hook 'flyspell-prog-mode) ;; 在编程模式下启用拼写检查
-
-      )
-  (message "Warning: Aspell is not installed."))
-
 (use-package indent-bars
   :ensure (indent-bars :type git :host github :repo "jdtsmith/indent-bars")
   :hook (prog-mode . indent-bars-mode))

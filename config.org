@@ -32,7 +32,6 @@
   - [[#emacs备份设置][Emacs备份设置]]
   - [[#解除一些不常用的快捷键][解除一些不常用的快捷键]]
   - [[#自动重载设置][自动重载设置]]
-  - [[#拼写检查][拼写检查]]
   - [[#indent-bar][indent bar]]
   - [[#symbol-overlay][symbol-overlay]]
   - [[#flycheck][flycheck]]
@@ -88,6 +87,7 @@
   - [[#magit-delta-增强-git-diff][magit-delta 增强 ~git diff~]]
   - [[#magit-file-icons][magit-file-icons]]
   - [[#treemacs-magit][treemacs-magit]]
+  - [[#emsg-blame][emsg-blame]]
   - [[#init-devel-文件尾][init-dev.el 文件尾]]
 - [[#init-toolsel][init-tools.el]]
   - [[#init-toolsel-文件头][init-tools.el 文件头]]
@@ -810,22 +810,7 @@ emacs 刚启动时执行的配置文件,此时还未加载主配置文件
     (auto-revert-remote-files t)
     (auto-revert-check-vc-info t)
     (global-auto-revert-non-file-buffers t))
-#+END_SRC
-
-** 拼写检查
-
-#+begin_src emacs-lisp
-  (if (executable-find "aspell")
-      (progn
-        ;; 在这里执行你的指令
-        (setq-default ispell-program-name "aspell")  ;; 或者使用 "hunspell"
-        (setq ispell-dictionary "english")            ;; 设置字典为英语
-        (add-hook 'text-mode-hook 'flyspell-mode)    ;; 在文本模式下启用拼写检查
-        (add-hook 'prog-mode-hook 'flyspell-prog-mode) ;; 在编程模式下启用拼写检查
-
-        )
-    (message "Warning: Aspell is not installed."))
-#+end_src
+#+END_SRCy
 
 ** indent bar
 
@@ -1856,6 +1841,38 @@ consult 的 git 扩展
 #+begin_src emacs-lisp
   (use-package treemacs-magit
     :after (treemacs magit))
+#+end_src
+
+** emsg-blame
+[[https://github.com/ISouthRain/emsg-blame][emsg-blame]] 便捷查看 git blame commit 信息的工具，非常好用。
+#+begin_src emacs-lisp
+  (use-package emsg-blame
+    :ensure
+    '(emsg-blame
+      :type git
+      :host github
+      :repo "ISouthRain/emsg-blame")
+    :custom
+    (emsg-blame-background nil "enable emsg blame background")
+    (emsg-blame-display
+     (lambda ()
+       "Display git blame message, right-aligned with Magit-style faces.
+  If another message is already being displayed, display both messages unless they
+  do not both fit in the echo area."
+       (let* ((message-log-max nil) ; prevent messages from being logged to *Messages*
+              (cur-msg (or (current-message) ""))
+  	        (blm-msg (format "%s %s %s "
+  			                 emsg-blame--commit-summary
+  			                 (propertize emsg-blame--commit-author 'face 'error)
+  			                 (propertize emsg-blame--commit-date 'face 'warning)))
+  	        (available-width (max 0 (- (frame-width) (string-width cur-msg) 1)))
+  	        (blm-msg-width (string-width blm-msg))
+  	        (padding (max 0 (- available-width blm-msg-width)))
+  	        (rev-blm-msg (concat (make-string padding ?\s) blm-msg)))
+         (if (> blm-msg-width available-width)
+  	       (message blm-msg)
+           (message (concat cur-msg rev-blm-msg))))))
+    :config (global-emsg-blame-mode))
 #+end_src
 
 ** init-dev.el 文件尾
