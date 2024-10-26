@@ -277,18 +277,17 @@
   (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
 (use-package yasnippet :defer t
-  :config
-  (yas-global-mode 1))
+  :hook (elpaca-after-init . yas-global-mode))
 
 (use-package
- doom-snippets
- :ensure
- (doom-snippets
-  :type git
-  :host github
-  :repo "doomemacs/snippets"
-  :files ("*.el" "*"))
- :after yasnippet)
+  doom-snippets
+  :ensure
+  (doom-snippets
+   :type git
+   :host github
+   :repo "doomemacs/snippets"
+   :files ("*.el" "*"))
+  :after yasnippet)
 
 ;; 再装一个通用模板库，省得没 template 用
 (use-package yasnippet-snippets :after yasnippet)

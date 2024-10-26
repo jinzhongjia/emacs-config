@@ -88,7 +88,6 @@
   - [[#magit-delta-增强-git-diff][magit-delta 增强 ~git diff~]]
   - [[#magit-file-icons][magit-file-icons]]
   - [[#treemacs-magit][treemacs-magit]]
-  - [[#emsg-blame][emsg-blame]]
   - [[#init-devel-文件尾][init-dev.el 文件尾]]
 - [[#init-toolsel][init-tools.el]]
   - [[#init-toolsel-文件头][init-tools.el 文件头]]
@@ -1755,18 +1754,17 @@ consult 的 git 扩展
 
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet :defer t
-    :config
-    (yas-global-mode 1))
+    :hook (elpaca-after-init . yas-global-mode))
 
   (use-package
-   doom-snippets
-   :ensure
-   (doom-snippets
-    :type git
-    :host github
-    :repo "doomemacs/snippets"
-    :files ("*.el" "*"))
-   :after yasnippet)
+    doom-snippets
+    :ensure
+    (doom-snippets
+     :type git
+     :host github
+     :repo "doomemacs/snippets"
+     :files ("*.el" "*"))
+    :after yasnippet)
 
   ;; 再装一个通用模板库，省得没 template 用
   (use-package yasnippet-snippets :after yasnippet)
@@ -1858,40 +1856,6 @@ consult 的 git 扩展
 #+begin_src emacs-lisp
   (use-package treemacs-magit
     :after (treemacs magit))
-#+end_src
-
-** emsg-blame
-
-[[https://github.com/ISouthRain/emsg-blame][emsg-blame]] 便捷查看 git blame commit 信息的工具，非常好用。
-
-#+begin_src emacs-lisp
-  (use-package emsg-blame
-    :ensure
-    '(emsg-blame
-      :type git
-      :host github
-      :repo "ISouthRain/emsg-blame")
-    :custom
-    (emsg-blame-background nil "enable emsg blame background")
-    (emsg-blame-display
-     (lambda ()
-       "Display git blame message, right-aligned with Magit-style faces.
-  If another message is already being displayed, display both messages unless they
-  do not both fit in the echo area."
-       (let* ((message-log-max nil) ; prevent messages from being logged to *Messages*
-              (cur-msg (or (current-message) ""))
-  	        (blm-msg (format "%s %s %s "
-  			                 emsg-blame--commit-summary
-  			                 (propertize emsg-blame--commit-author 'face 'error)
-  			                 (propertize emsg-blame--commit-date 'face 'warning)))
-  	        (available-width (max 0 (- (frame-width) (string-width cur-msg) 1)))
-  	        (blm-msg-width (string-width blm-msg))
-  	        (padding (max 0 (- available-width blm-msg-width)))
-  	        (rev-blm-msg (concat (make-string padding ?\s) blm-msg)))
-         (if (> blm-msg-width available-width)
-  	       (message blm-msg)
-           (message (concat cur-msg rev-blm-msg))))))
-    :config (global-emsg-blame-mode))
 #+end_src
 
 ** init-dev.el 文件尾
